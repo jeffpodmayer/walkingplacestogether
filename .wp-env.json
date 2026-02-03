@@ -1,0 +1,10 @@
+{
+  "core": "WordPress/WordPress",
+  "phpVersion": "8.2",
+  "plugins": [],
+  "themes": ["./wp-content/themes/astra"],
+  "mappings": {
+    "wp-content": "./wp-content"
+  },
+  "port": 8888
+}
