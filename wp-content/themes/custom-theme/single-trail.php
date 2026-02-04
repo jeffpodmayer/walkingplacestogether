@@ -57,6 +57,7 @@ while ( have_posts() ) :
       </div>
     </div>
 
+    <div class="trail-content-wrap">
     <div class="trail-title-row">
       <h1 class="entry-title"><?php the_title(); ?></h1>
       <?php if ( $region ) : ?>
@@ -108,6 +109,7 @@ while ( have_posts() ) :
       echo '</div>';
     }
     ?>
+    </div>
 
     <?php astra_entry_bottom(); ?>
   </article>

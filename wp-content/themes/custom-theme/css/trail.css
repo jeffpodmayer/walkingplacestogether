@@ -1,3 +1,12 @@
+/* CONTAINED WIDTH FOR CONTENT UNDER THE HERO (EVERY SINGLE-TRAIL POST) */
+.single-trail .trail-content-wrap {
+  max-width: 900px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  margin-top: 1rem;
+}
+
+/* TRAIL AND REGION TITLE ROW */
 .trail-title-row {
   flex-wrap: wrap;
   align-items: center;
@@ -6,19 +15,17 @@
 }
 
 .entry-title {
-  margin: 0.5em 0 0.1em 1em;
   font-size: 3rem;
   font-weight: 500;
 }
 
-/* Small badge to the right of the title */
+/* Small badge below the title */
 .trail-region-card {
   display: inline-flex;
   gap: 0.35rem;
   border: 1px solid #536941;
   border-radius: 8px;
   padding: 0 0.6em;
-  margin: 0 0 0 3em;
   background: #536941;
 }
 
@@ -28,7 +35,7 @@
   color: #fff;
 }
 
-/* Trail details grid */
+/* TRAIL DETAILS GRID */
 .trail-details {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
