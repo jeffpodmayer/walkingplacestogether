@@ -1,0 +1,62 @@
+.trail-title-row {
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 0 0 0 3em;
+}
+
+.entry-title {
+  margin: 0.5em 0 0.1em 1em;
+  font-size: 3rem;
+  font-weight: 500;
+}
+
+/* Small badge to the right of the title */
+.trail-region-card {
+  display: inline-flex;
+  gap: 0.35rem;
+  border: 1px solid #536941;
+  border-radius: 8px;
+  padding: 0 0.6em;
+  margin: 0 0 0 3em;
+  background: #536941;
+}
+
+.trail-region-value {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+/* Trail details grid */
+.trail-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1rem;
+  margin: 1em 3em;
+}
+
+.trail-detail-card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.trail-detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  font-weight: 600;
+}
+
+.trail-detail-value {
+  font-size: 3rem;
+  font-weight: 500;
+  color: #222;
+}
