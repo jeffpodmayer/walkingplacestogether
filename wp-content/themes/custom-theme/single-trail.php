@@ -139,6 +139,30 @@ while ( have_posts() ) :
       echo '</div>';
     }
 
+
+    // Trail Overview Images (Galerie ACF 4 - Responsive)
+    $overview_images = get_field( 'trail_overview_images' );
+    if ( $overview_images && is_array( $overview_images ) ) {
+      echo '<div class="trail-image-gallery trail-overview-gallery">';
+      foreach ( $overview_images as $image ) {
+        $image_id = $image['attachment']->ID;
+        $full_url = $image['metadata']['full']['file_url'];
+        $caption = $image['attachment']->post_excerpt;
+        
+        echo '<figure class="trail-gallery-item">';
+        echo '<a href="' . esc_url( $full_url ) . '" class="trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
+        echo wp_get_attachment_image( $image_id, 'large', false, array(
+          'loading' => 'lazy'
+        ));
+        echo '</a>';
+        if ( $caption ) {
+          echo '<figcaption>' . esc_html( $caption ) . '</figcaption>';
+        }
+        echo '</figure>';
+      }
+      echo '</div>';
+    }
+
     // Experience section
     $experience = get_field( 'experience' );
     if ( $experience ) {

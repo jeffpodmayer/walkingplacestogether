@@ -136,5 +136,98 @@
 }
 
 .trail-section-content p {
-  margin-bottom: 1em;
+  margin-bottom: 0.5em;
+}
+
+/* 3-column responsive grid for trail galleries */
+.single-trail .trail-image-gallery {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 1rem !important;
+}
+
+.trail-gallery-item {
+  margin: 0;
+}
+
+.single-trail .trail-gallery-item img {
+  width: 100%;
+  height: 240px; /* adjust height */
+  object-fit: cover; /* crop to fit */
+  display: block;
+  border-radius: 8px; /* optional */
+}
+
+@media (max-width: 900px) {
+  .trail-image-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .trail-image-gallery {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Force close button visible */
+.glightbox-clean .gclose {
+  display: block !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+.gslide-title {
+  font-size: 1rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  color: #fff !important;
+}
+
+.desc-inner {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.glightbox-clean .gslide-description,
+.glightbox-clean .gslide-desc {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Square, centered close button */
+.glightbox-clean .gclose {
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important; /* or 0 for sharp square */
+}
+
+.glightbox-clean .gclose:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05);
+}
+
+.glightbox-clean .gclose:hover svg {
+  fill: #000 !important;
+}
+
+/* Make the X centered and visible */
+.glightbox-clean .gclose::after,
+.glightbox-clean .gclose::before,
+.glightbox-clean .gclose svg {
+  margin: 0 !important;
+  color: #fff !important;
+  fill: #fff !important;
+}
+
+/* Speed up close/fade animation */
+.glightbox-container,
+.glightbox-slider,
+.glightbox-slide,
+.gslide {
+  transition-duration: 0.5s !important;
 }

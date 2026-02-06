@@ -33,3 +33,30 @@ function custom_theme_enqueue_trail_styles() {
 		wp_get_theme()->get( 'Version' )
 	);
 }
+
+// functions.php
+add_action( 'wp_enqueue_scripts', function() {
+    if ( ! is_singular( 'trail' ) ) {
+      return;
+    }
+  
+    wp_enqueue_style(
+      'glightbox',
+      'https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css',
+      array(),
+      '3.3.0'
+    );
+  
+    wp_enqueue_script(
+      'glightbox',
+      'https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js',
+      array(),
+      '3.3.0',
+      true
+    );
+  
+    wp_add_inline_script(
+      'glightbox',
+      'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
+    );
+  });
