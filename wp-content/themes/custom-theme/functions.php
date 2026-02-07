@@ -60,3 +60,16 @@ add_action( 'wp_enqueue_scripts', function() {
       'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
     );
   });
+
+  add_action( 'wp_enqueue_scripts', function() {
+    if ( ! is_singular( 'trail' ) ) {
+      return;
+    }
+    wp_enqueue_script(
+      'trail',
+      get_stylesheet_directory_uri() . '/js/trail.js',
+      array( 'glightbox' ),
+      wp_get_theme()->get( 'Version' ),
+      true
+    );
+  });

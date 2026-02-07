@@ -17,7 +17,7 @@ This document tracks database changes made locally that need to be replicated on
 ### 1. Added Galerie ACF Fields
 
 - Download Pliug in
-- Add ACF fields below each section and gallery
+- Add ACF fields for trail_overview_images, trail_photo_gallery
 
 ---
 

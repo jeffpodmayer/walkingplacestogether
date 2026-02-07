@@ -140,14 +140,27 @@
 }
 
 /* 3-column responsive grid for trail galleries */
-.single-trail .trail-image-gallery {
+.trail-image-gallery {
   display: grid !important;
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 1rem !important;
+}
+
+.trail-gallery--1 {
+  grid-template-columns: 1fr;
+}
+
+.trail-gallery--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.trail-gallery--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .trail-gallery-item {
   margin: 0;
+  position: relative;
+  overflow: hidden;
 }
 
 .single-trail .trail-gallery-item img {
@@ -156,6 +169,49 @@
   object-fit: cover; /* crop to fit */
   display: block;
   border-radius: 8px; /* optional */
+}
+
+/* 1 column: full width, no crop */
+.trail-gallery--1 .trail-gallery-item img {
+  height: auto;
+  object-fit: contain;
+}
+
+/* 2 columns: slightly taller, less crop */
+.trail-gallery--2 .trail-gallery-item img {
+  height: 320px; /* or auto if you want no crop */
+  object-fit: cover; /* or contain for no crop */
+}
+
+/* Caption overlay at bottom, expands on hover */
+.trail-gallery-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: 0.85rem;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  margin: 0;
+  padding: 0.4rem 0.8rem;
+  line-height: 1.3;
+  text-align: center !important;
+  border-radius: 0 0 8px 8px;
+
+  /* one-line truncation */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  transition: max-height 0.1s ease, padding 0.1s ease;
+}
+
+.trail-gallery-item:hover .trail-gallery-caption.trail-caption--overflow {
+  max-height: 6em;
+  padding: 0.6rem 0.8rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 @media (max-width: 900px) {
@@ -230,4 +286,89 @@
 .glightbox-slide,
 .gslide {
   transition-duration: 0.5s !important;
+}
+
+.trail-gallery-strip-wrap {
+  position: relative;
+}
+
+.trail-gallery-strip {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 12px;
+  scrollbar-width: thin;
+}
+
+.trail-gallery-strip-item {
+  flex: 0 0 auto;
+  width: 400px;
+  scroll-snap-align: start;
+}
+
+.trail-gallery-strip-item img {
+  height: 400px;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.trail-gallery-strip::-webkit-scrollbar {
+  height: 8px;
+}
+
+.trail-gallery-strip::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+}
+
+.trail-gallery-strip::-webkit-scrollbar-track {
+  border-radius: 6px;
+}
+
+/* Overlay scroll label on right edge */
+.trail-gallery-strip-label {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  padding: 4px 8px;
+  margin: 0 6px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+
+.trail-gallery-strip-label {
+  animation: pill-float 2.5s ease-in-out infinite;
+}
+
+@keyframes pill-float {
+  0% {
+    transform: translateY(-50%) translateX(0);
+  }
+  50% {
+    transform: translateY(-50%) translateX(6px);
+  }
+  100% {
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.trail-gallery-strip-label.is-hidden {
+  opacity: 0;
+}
+
+.trail-gallery-strip-label--right {
+  right: 12px;
+}
+
+.trail-gallery-strip-label--left {
+  left: 12px;
 }
