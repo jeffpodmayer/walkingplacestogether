@@ -191,7 +191,7 @@
   bottom: 0;
   font-size: 0.85rem;
   color: #fff;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.5);
   margin: 0;
   padding: 0.4rem 0.8rem;
   line-height: 1.3;
@@ -203,7 +203,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 
-  transition: max-height 0.1s ease, padding 0.1s ease;
+  transition:
+    max-height 0.1s ease,
+    padding 0.1s ease;
 }
 
 .trail-gallery-item:hover .trail-gallery-caption.trail-caption--overflow {
@@ -288,87 +290,79 @@
   transition-duration: 0.5s !important;
 }
 
-.trail-gallery-strip-wrap {
-  position: relative;
-}
-
-.trail-gallery-strip {
-  display: flex;
+/* Trail photo gallery grid (3x3 collapsed) */
+.trail-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  padding-bottom: 12px;
-  scrollbar-width: thin;
 }
 
-.trail-gallery-strip-item {
-  flex: 0 0 auto;
-  width: 400px;
-  scroll-snap-align: start;
-}
-
-.trail-gallery-strip-item img {
-  height: 400px;
+.trail-gallery-grid-item img {
   width: 100%;
+  height: 240px; /* adjust if needed */
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 10px;
 }
 
-.trail-gallery-strip::-webkit-scrollbar {
-  height: 8px;
+/* Collapse to first 9 items */
+.trail-gallery-grid[data-collapsed="true"]
+  .trail-gallery-grid-item:nth-child(n + 10) {
+  display: none;
 }
 
-.trail-gallery-strip::-webkit-scrollbar-thumb {
-  border-radius: 6px;
-}
-
-.trail-gallery-strip::-webkit-scrollbar-track {
-  border-radius: 6px;
-}
-
-/* Overlay scroll label on right edge */
-.trail-gallery-strip-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  padding: 4px 8px;
-  margin: 0 6px;
+/* Toggle button */
+.trail-gallery-toggle {
+  margin-top: 12px;
+  padding: 10px 16px;
+  border: 1px solid #ccc;
+  background: #fff;
   border-radius: 999px;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.3s ease;
+  cursor: pointer;
+  font-size: 0.9rem;
 }
 
-.trail-gallery-strip-label {
-  animation: pill-float 2.5s ease-in-out infinite;
+.trail-gallery-toggle:hover {
+  background: #f2f2f2;
+  color: #222;
 }
 
-@keyframes pill-float {
-  0% {
-    transform: translateY(-50%) translateX(0);
-  }
-  50% {
-    transform: translateY(-50%) translateX(6px);
-  }
-  100% {
-    transform: translateY(-50%) translateX(0);
-  }
+.trail-gallery-toggle,
+.trail-gallery-toggle:focus,
+.trail-gallery-toggle:active {
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  outline: none;
+  box-shadow: none;
 }
 
-.trail-gallery-strip-label.is-hidden {
-  opacity: 0;
+.trail-gallery-toggle:hover,
+.trail-gallery-toggle:focus:hover,
+.trail-gallery-toggle:active:hover {
+  background: #f2f2f2;
+  color: #222;
 }
 
-.trail-gallery-strip-label--right {
-  right: 12px;
+.trail-gallery-toggle:focus-visible {
+  outline: 2px solid #536941;
+  outline-offset: 2px;
 }
 
-.trail-gallery-strip-label--left {
-  left: 12px;
+.trail-gallery-grid-item {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Default: one-line truncated */
+.trail-gallery-caption {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* On hover: show full caption */
+.trail-gallery-grid-item:hover .trail-gallery-caption {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
 }

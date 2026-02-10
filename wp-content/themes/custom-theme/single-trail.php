@@ -182,6 +182,37 @@ while ( have_posts() ) :
       echo '<div class="trail-section-content">' . wp_kses_post( $experience ) . '</div>';
       echo '</div>';
     }
+
+    // Experience Images (Galerie ACF 4 - Responsive)
+    $experience_images = get_field( 'experience_images' );
+    if ( $experience_images && is_array( $experience_images ) ) {
+      $count = count( $experience_images );
+    if ( $count === 1 ) {
+      $layout_class = 'trail-gallery--1';
+    } elseif ( $count === 2 || $count === 4 ) {
+      $layout_class = 'trail-gallery--2';
+    } else {
+      $layout_class = 'trail-gallery--3';
+    }
+    echo '<div class="trail-image-gallery trail-overview-gallery ' . esc_attr( $layout_class ) . '">';
+      foreach ( $experience_images as $image ) {
+        $image_id = $image['attachment']->ID;
+        $full_url = $image['metadata']['full']['file_url'];
+        $caption = $image['attachment']->post_excerpt;
+        
+        echo '<figure class="trail-gallery-item">';
+        echo '<a href="' . esc_url( $full_url ) . '" class="trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
+        echo wp_get_attachment_image( $image_id, 'large', false, array(
+          'loading' => 'lazy'
+        ));
+        echo '</a>';
+        if ( $caption ) {
+          echo '<figcaption class="trail-gallery-caption">' . esc_html( $caption ) . '</figcaption>';
+        }
+        echo '</figure>';
+      }
+      echo '</div>';
+    }
     ?>
 
 <?php
@@ -194,6 +225,37 @@ while ( have_posts() ) :
       echo '</div>';
     }
 
+    // Logistics Images (Galerie ACF 4 - Responsive)
+    $logistics_images = get_field( 'logistics_images' );
+    if ( $logistics_images && is_array( $logistics_images ) ) {
+      $count = count( $logistics_images );
+    if ( $count === 1 ) {
+      $layout_class = 'trail-gallery--1';
+    } elseif ( $count === 2 || $count === 4 ) {
+      $layout_class = 'trail-gallery--2';
+    } else {
+      $layout_class = 'trail-gallery--3';
+    }
+    echo '<div class="trail-image-gallery trail-overview-gallery ' . esc_attr( $layout_class ) . '">';
+      foreach ( $logistics_images as $image ) {
+        $image_id = $image['attachment']->ID;
+        $full_url = $image['metadata']['full']['file_url'];
+        $caption = $image['attachment']->post_excerpt;
+        
+        echo '<figure class="trail-gallery-item">';
+        echo '<a href="' . esc_url( $full_url ) . '" class="trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
+        echo wp_get_attachment_image( $image_id, 'large', false, array(
+          'loading' => 'lazy'
+        ));
+        echo '</a>';
+        if ( $caption ) {
+          echo '<figcaption class="trail-gallery-caption">' . esc_html( $caption ) . '</figcaption>';
+        }
+        echo '</figure>';
+      }
+      echo '</div>';
+    }
+
     // Gear section
     $gear = get_field( 'gear' );
     if ( $gear ) {
@@ -203,28 +265,35 @@ while ( have_posts() ) :
       echo '</div>';
     }
 
-    $trail_photo_gallery = get_field( 'trail_photo_gallery' );
-    if ( $trail_photo_gallery && is_array( $trail_photo_gallery ) ) {
-      echo '<div class="trail-section trail-photo-gallery">';
-      echo '<h2 class="trail-section-title">Photo Gallery</h2>';
-      echo '<div class="trail-gallery-strip-wrap">';
-      echo '<div class="trail-gallery-strip">';
-
-      foreach ( $trail_photo_gallery as $image ) {
+    // Gear Images (Galerie ACF 4 - Responsive)
+    $gear_images = get_field( 'gear_images' );
+    if ( $gear_images && is_array( $gear_images ) ) {
+      $count = count( $gear_images );
+    if ( $count === 1 ) {
+      $layout_class = 'trail-gallery--1';
+    } elseif ( $count === 2 || $count === 4 ) {
+      $layout_class = 'trail-gallery--2';
+    } else {
+      $layout_class = 'trail-gallery--3';
+    }
+    echo '<div class="trail-image-gallery trail-overview-gallery ' . esc_attr( $layout_class ) . '">';
+      foreach ( $gear_images as $image ) {
         $image_id = $image['attachment']->ID;
         $full_url = $image['metadata']['full']['file_url'];
-        $caption  = $image['attachment']->post_excerpt;
-
-        echo '<a href="' . esc_url( $full_url ) . '" class="trail-gallery-strip-item trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
-        echo wp_get_attachment_image( $image_id, 'large', false, array( 'loading' => 'lazy' ) );
+        $caption = $image['attachment']->post_excerpt;
+        
+        echo '<figure class="trail-gallery-item">';
+        echo '<a href="' . esc_url( $full_url ) . '" class="trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
+        echo wp_get_attachment_image( $image_id, 'large', false, array(
+          'loading' => 'lazy'
+        ));
         echo '</a>';
+        if ( $caption ) {
+          echo '<figcaption class="trail-gallery-caption">' . esc_html( $caption ) . '</figcaption>';
+        }
+        echo '</figure>';
       }
-
-      echo '</div>'; // close trail-gallery-strip
-      echo '<div class="trail-gallery-strip-label trail-gallery-strip-label--right">Scroll →</div>';
-      echo '<div class="trail-gallery-strip-label trail-gallery-strip-label--left">← Scroll</div>';
-      echo '</div>'; // close trail-gallery-strip-wrap
-      echo '</div>'; // close trail-photo-gallery
+      echo '</div>';
     }
 
     // Resources & Links section
@@ -235,6 +304,35 @@ while ( have_posts() ) :
       echo '<div class="trail-section-content">' . wp_kses_post( $resources_links ) . '</div>';
       echo '</div>';
     }
+
+  
+    // Trail Photo Gallery (grid with expand)
+    $trail_photo_gallery = get_field( 'trail_photo_gallery' );
+    if ( $trail_photo_gallery && is_array( $trail_photo_gallery ) ) {
+      echo '<div class="trail-section trail-photo-gallery">';
+      echo '<h2 class="trail-section-title">Photo Gallery</h2>';
+
+      echo '<div class="trail-gallery-grid" data-collapsed="true">';
+      foreach ( $trail_photo_gallery as $image ) {
+        $image_id = $image['attachment']->ID;
+        $full_url = $image['metadata']['full']['file_url'];
+        $caption = wp_get_attachment_caption( $image_id );
+
+      echo '<figure class="trail-gallery-grid-item">';
+      echo '<a href="' . esc_url( $full_url ) . '" class="trail-lightbox" data-title="' . esc_attr( $caption ) . '">';
+      echo wp_get_attachment_image( $image_id, 'large', false, array( 'loading' => 'lazy' ) );
+      echo '</a>';
+      if ( $caption ) {
+        echo '<figcaption class="trail-gallery-caption">' . esc_html( $caption ) . '</figcaption>';
+      }
+      echo '</figure>';
+      }
+      echo '</div>';
+
+      echo '<button class="trail-gallery-toggle" type="button">Show all photos</button>';
+      echo '</div>';
+    }
+
     ?>
 
 <?php
