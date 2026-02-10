@@ -61,7 +61,7 @@ while ( have_posts() ) :
     <div class="trail-title-row">
       <h1 class="entry-title"><?php the_title(); ?></h1>
       <?php if ( $region ) : ?>
-        <div class="trail-region-card">
+        <div class="trail-region-card trail-region-card--region">
           <span class="trail-region-value">
           <?php
           if ( is_array( $region ) ) {
@@ -82,51 +82,71 @@ while ( have_posts() ) :
           ?>
           </span>
         </div>
+        <?php
+          $direction_style = get_field( 'direction_style' );
+          if ( $direction_style ) : ?>
+            <div class="trail-region-card">
+              <span class="trail-region-value">
+                <?php echo esc_html( $acf_value_to_string( $direction_style ) ); ?>
+              </span>
+            </div>
+          <?php endif; ?>
+        <?php
+        $start_date = get_field( 'start_date' );
+        $end_date   = get_field( 'end_date' );
+
+        if ( $start_date || $end_date ) : ?>
+          <div class="trail-region-card">
+            <span class="trail-region-value">
+              <?php
+              $start = $start_date ? $acf_value_to_string( $start_date ) : '';
+              $end   = $end_date ? $acf_value_to_string( $end_date ) : '';
+              echo esc_html( trim( $start . ' → ' . $end, ' →' ) );
+              ?>
+            </span>
+          </div>
+        <?php endif; ?>
       <?php endif; ?>
     </div>
 
 
     <?php
-    $distance        = get_field( 'distance' );
-    $trip_duration   = get_field( 'trip_duration_days' );
-    $direction_style  = get_field( 'direction_style' );
-    $season          = get_field( 'season' );
+      $distance      = get_field( 'distance' );
+      $trip_duration = get_field( 'trip_duration_days' );
 
-    if ( $distance || $trip_duration || $direction_style || $season ) {
-      echo '<div class="trail-details-container">';
-      
-      /* Left: Miles and Days in a horizontal row */
-      echo '<div class="trail-details-left">';
-      if ( $distance ) {
-        echo '<div class="trail-detail-card">';
-        echo '<span class="trail-detail-value">' . esc_html( $acf_value_to_string( $distance ) ) . '</span>';
-        echo '<span class="trail-detail-label">Miles</span></div>';
-      }
-      if ( $trip_duration ) {
-        echo '<div class="trail-detail-card">';
-        echo '<span class="trail-detail-value">' . esc_html( $acf_value_to_string( $trip_duration ) ) . '</span>';
-        echo '<span class="trail-detail-label">Days</span></div>';
-      }
-      echo '</div>';
-      
-      /* Right: Direction and Season in a vertical column */
-      echo '<div class="trail-details-right">';
-      if ( $direction_style ) {
-        echo '<div class="trail-detail-row">';
-        echo '<span class="trail-detail-row-label">Direction / Style</span>';
-        echo '<span class="trail-detail-row-value">' . esc_html( $acf_value_to_string( $direction_style ) ) . '</span>';
-        echo '</div>';
-      }
-      if ( $season ) {
-        echo '<div class="trail-detail-row trail-detail-row-season">';
-        echo '<span class="trail-detail-row-label">Season Hiked</span>';
-        echo '<span class="trail-detail-row-value">' . esc_html( $acf_value_to_string( $season ) ) . '</span>';
-        echo '</div>';
-      }
-      echo '</div>';
+      if ( $distance || $trip_duration ) {
+        echo '<div class="trail-details-container">';
+        
+        /* Left: Miles and Days in a horizontal row */
+        echo '<div class="trail-details-left">';
+        if ( $distance ) {
+          echo '<div class="trail-detail-card">';
+          echo '<span class="trail-detail-value">' . esc_html( $acf_value_to_string( $distance ) ) . '</span>';
+          echo '<span class="trail-detail-label">Miles</span></div>';
+        }
+        if ( $trip_duration ) {
+          echo '<div class="trail-detail-card">';
+          echo '<span class="trail-detail-value">' . esc_html( $acf_value_to_string( $trip_duration ) ) . '</span>';
+          echo '<span class="trail-detail-label">Days</span></div>';
+        }
+        echo '</div>'; // close trail-details-left
 
-      echo '</div>';
-    }
+        echo '</div>'; // close trail-details-container
+
+        // Quick Links section
+        echo '<div class="trail-quick-links-section">';
+        echo '<div class="trail-details-right">'; // reuse styling
+        echo '<h3 class="trail-section-title">Quick Links</h3>';
+        echo '<div class="trail-quick-links">';
+        echo '<a href="#trail-experience">Experience</a>';
+        echo '<a href="#trail-logistics">Logistics</a>';
+        echo '<a href="#trail-gear">Gear</a>';
+        echo '<a href="#trail-gallery">Photo Gallery</a>';
+        echo '<a href="#trail-resources">Resources</a>';
+        echo '</div>';
+        echo '</div>'; // close trail-details-right
+        echo '</div>'; // close trail-quick-links-section
+      }
     ?>
 
     <?php /* Trail Photo Gallery (film strip) */
@@ -136,7 +156,7 @@ while ( have_posts() ) :
     // Trail Overview section
     $trail_overview = get_field( 'trail_overview' );
     if ( $trail_overview ) {
-      echo '<div class="trail-section trail-overview">';
+      echo '<div class="trail-section trail-overview" id="trail-overview">';
       echo '<h2 class="trail-section-title">Trail Overview</h2>';
       echo '<div class="trail-section-content">' . wp_kses_post( $trail_overview ) . '</div>';
       echo '</div>';
@@ -177,7 +197,7 @@ while ( have_posts() ) :
     // Experience section
     $experience = get_field( 'experience' );
     if ( $experience ) {
-      echo '<div class="trail-section trail-experience">';
+      echo '<div class="trail-section trail-experience" id="trail-experience">';
       echo '<h2 class="trail-section-title">Experience</h2>';
       echo '<div class="trail-section-content">' . wp_kses_post( $experience ) . '</div>';
       echo '</div>';
@@ -219,7 +239,7 @@ while ( have_posts() ) :
     // Logistics section
     $logistics = get_field( 'logistics' );
     if ( $logistics ) {
-      echo '<div class="trail-section trail-logistics">';
+      echo '<div class="trail-section trail-logistics" id="trail-logistics">';
       echo '<h2 class="trail-section-title">Logistics</h2>';
       echo '<div class="trail-section-content">' . wp_kses_post( $logistics ) . '</div>';
       echo '</div>';
@@ -259,7 +279,7 @@ while ( have_posts() ) :
     // Gear section
     $gear = get_field( 'gear' );
     if ( $gear ) {
-      echo '<div class="trail-section trail-gear">';
+      echo '<div class="trail-section trail-gear" id="trail-gear">';
       echo '<h2 class="trail-section-title">Gear</h2>';
       echo '<div class="trail-section-content">' . wp_kses_post( $gear ) . '</div>';
       echo '</div>';
@@ -299,7 +319,7 @@ while ( have_posts() ) :
     // Resources & Links section
     $resources_links = get_field( 'resources_links' );
     if ( $resources_links ) {
-      echo '<div class="trail-section trail-resources">';
+      echo '<div class="trail-section trail-resources" id="trail-resources">';
       echo '<h2 class="trail-section-title">Resources & Links</h2>';
       echo '<div class="trail-section-content">' . wp_kses_post( $resources_links ) . '</div>';
       echo '</div>';
@@ -309,7 +329,7 @@ while ( have_posts() ) :
     // Trail Photo Gallery (grid with expand)
     $trail_photo_gallery = get_field( 'trail_photo_gallery' );
     if ( $trail_photo_gallery && is_array( $trail_photo_gallery ) ) {
-      echo '<div class="trail-section trail-photo-gallery">';
+      echo '<div class="trail-section trail-photo-gallery" id="trail-gallery">';
       echo '<h2 class="trail-section-title">Photo Gallery</h2>';
 
       echo '<div class="trail-gallery-grid" data-collapsed="true">';
@@ -344,7 +364,7 @@ while ( have_posts() ) :
         $related_posts = array( $related_posts );
       }
 
-      echo '<div class="trail-section trail-related-posts">';
+      echo '<div class="trail-section trail-related-posts" id="trail-related-posts" >';
       echo '<h2 class="trail-section-title">Related Blog Posts</h2>';
       echo '<div class="related-posts-grid">';
       
