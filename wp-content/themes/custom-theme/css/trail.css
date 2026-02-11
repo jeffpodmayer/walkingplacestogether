@@ -1,4 +1,6 @@
-/* CONTAINED WIDTH FOR CONTENT UNDER THE HERO (EVERY SINGLE-TRAIL POST) */
+/* =========================================================
+   1) Layout + Containers
+   ========================================================= */
 .single-trail .trail-content-wrap {
   max-width: 1000px;
   margin-left: auto;
@@ -8,19 +10,57 @@
   margin-top: 1rem;
 }
 
-/* TRAIL AND REGION TITLE ROW */
+.trail-section {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+}
+
+.trail-section-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #222;
+}
+
+.trail-section-content {
+  line-height: 1.6;
+  color: #444;
+  font-size: 1.1rem;
+}
+
+.trail-section-content p {
+  margin-bottom: 0.5em;
+}
+
+.trail-section-content a {
+  color: #536941;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* =========================================================
+     2) Title Row + Badges
+     ========================================================= */
 .trail-title-row {
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1rem;
+  margin-bottom: 1rem; /* space below the border */
+  border-bottom: 1px dashed #536941;
+}
+
+.trail-title-subrow {
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .entry-title {
   font-size: 3.5rem;
   font-weight: 500;
+  margin-bottom: 0;
 }
 
-/* Small badge below the title */
 .trail-region-card {
   display: inline-flex;
   border: 1px solid #536941;
@@ -29,14 +69,10 @@
   background: #536941;
 }
 
-/* Invert just the region badge */
 .trail-region-card--region {
   background: #fff;
   border-color: #536941;
-}
-
-.trail-region-card--region .trail-region-value {
-  color: #536941;
+  margin-top: 0.6rem;
 }
 
 .trail-region-card.trail-region-card--region .trail-region-value {
@@ -44,12 +80,14 @@
 }
 
 .trail-region-value {
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
   color: #fff;
 }
 
-/* TRAIL DETAILS GRID */
+/* =========================================================
+     3) Trail Details Cards
+     ========================================================= */
 .trail-details-container {
   display: flex;
   flex-direction: row;
@@ -60,59 +98,6 @@
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
-}
-
-.trail-details-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  width: 200px;
-  background: #f8f8f8; /* lighter than card white */
-  border: 1px solid #e6e6e6;
-  border-radius: 20px; /* slightly smaller than 25px */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06); /* softer shadow */
-  padding: 28px 32px;
-}
-
-.trail-quick-links {
-  display: flex;
-  flex-direction: column;
-}
-
-.trail-quick-links-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #555;
-}
-
-.trail-quick-links a {
-  color: #536941;
-  text-decoration: none;
-  font-size: 1.2rem;
-}
-
-.trail-quick-links a:hover {
-  text-decoration: underline;
-}
-
-/* Smaller Quick Links title */
-.trail-quick-links-section .trail-section-title {
-  font-size: 1.2rem; /* adjust */
-  margin-bottom: 0.4rem;
-}
-
-/* Make the box wider (~75% of page) */
-.trail-quick-links-section .trail-details-right {
-  width: 75%;
-  max-width: 900px; /* optional */
-  margin: 0.1rem 0; /* or 0.5rem */
-}
-
-/* Mobile fallback */
-@media (max-width: 900px) {
-  .trail-quick-links-section .trail-details-right {
-    width: 100%;
-  }
 }
 
 .trail-detail-card {
@@ -126,7 +111,7 @@
   gap: 1.5rem;
   align-items: center;
   justify-content: space-between;
-  margin: 1.25rem 0 1.25rem 0;
+  margin: 1.25rem 0 0 0;
   min-width: 180px;
   width: 180px;
   min-height: 160px;
@@ -147,7 +132,6 @@
   font-weight: bold;
 }
 
-/* TRAIL DETAIL ROW */
 .trail-detail-row {
   background: #fff;
   border: 1px solid #e0e0e0;
@@ -176,29 +160,64 @@
   margin-bottom: 1.25rem;
 }
 
-/* TRAIL SECTION */
-.trail-section {
-  max-width: 1000px;
-  margin: 1.5rem auto;
+/* =========================================================
+     4) Quick Links
+     ========================================================= */
+.trail-details-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 200px;
+  background: #f8f8f8;
+  border: 1px solid #e6e6e6;
+  border-radius: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
+  padding: 28px 32px;
 }
 
-.trail-section-title {
-  font-size: 1.75rem;
+.trail-quick-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.trail-quick-links-label {
   font-weight: 600;
-  margin-bottom: 1rem;
-  color: #222;
+  font-size: 0.9rem;
+  color: #555;
 }
 
-.trail-section-content {
-  line-height: 1.7;
-  color: #444;
+.trail-quick-links a {
+  color: #536941;
+  text-decoration: none;
+  font-size: 1.1rem;
 }
 
-.trail-section-content p {
-  margin-bottom: 0.5em;
+.trail-quick-links a:hover {
+  text-decoration: underline;
 }
 
-/* 3-column responsive grid for trail galleries */
+.trail-quick-links-section .trail-section-title {
+  font-size: 1.2rem;
+  margin-bottom: 0.4rem;
+  border-bottom: 1px dashed #536941;
+  padding-bottom: 0.5rem;
+}
+
+.trail-quick-links-section .trail-details-right {
+  width: 75%;
+  max-width: 900px;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .trail-quick-links-section .trail-details-right {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+     5) Section Image Galleries (Overview/Experience/etc)
+     ========================================================= */
 .trail-image-gallery {
   display: grid !important;
   gap: 1rem !important;
@@ -224,31 +243,28 @@
 
 .single-trail .trail-gallery-item img {
   width: 100%;
-  height: 240px; /* adjust height */
-  object-fit: cover; /* crop to fit */
+  height: 240px;
+  object-fit: cover;
   display: block;
-  border-radius: 8px; /* optional */
+  border-radius: 8px;
 }
 
-/* 1 column: full width, no crop */
 .trail-gallery--1 .trail-gallery-item img {
   height: auto;
   object-fit: contain;
 }
 
-/* 2 columns: slightly taller, less crop */
 .trail-gallery--2 .trail-gallery-item img {
-  height: 320px; /* or auto if you want no crop */
-  object-fit: cover; /* or contain for no crop */
+  height: 320px;
+  object-fit: cover;
 }
 
-/* Caption overlay at bottom, expands on hover */
 .trail-gallery-caption {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   color: #fff;
   background: rgba(0, 0, 0, 0.5);
   margin: 0;
@@ -256,12 +272,9 @@
   line-height: 1.3;
   text-align: center !important;
   border-radius: 0 0 8px 8px;
-
-  /* one-line truncation */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
   transition:
     max-height 0.1s ease,
     padding 0.1s ease;
@@ -287,89 +300,32 @@
   }
 }
 
-/* Force close button visible */
-.glightbox-clean .gclose {
-  display: block !important;
-  color: #fff !important;
-  opacity: 1 !important;
-  z-index: 9999 !important;
-}
-
-.gslide-title {
-  font-size: 1rem;
-  margin: 0 !important;
-  padding: 0 !important;
-  text-align: center !important;
-  color: #fff !important;
-}
-
-.desc-inner {
-  background: rgba(0, 0, 0, 0.6) !important;
-}
-
-.glightbox-clean .gslide-description,
-.glightbox-clean .gslide-desc {
-  background: rgba(0, 0, 0, 0.6) !important;
-}
-
-/* Square, centered close button */
-.glightbox-clean .gclose {
-  width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  border-radius: 6px !important; /* or 0 for sharp square */
-}
-
-.glightbox-clean .gclose:hover {
-  background: rgba(255, 255, 255, 0.2) !important;
-  transform: scale(1.05);
-}
-
-.glightbox-clean .gclose:hover svg {
-  fill: #000 !important;
-}
-
-/* Make the X centered and visible */
-.glightbox-clean .gclose::after,
-.glightbox-clean .gclose::before,
-.glightbox-clean .gclose svg {
-  margin: 0 !important;
-  color: #fff !important;
-  fill: #fff !important;
-}
-
-/* Speed up close/fade animation */
-.glightbox-container,
-.glightbox-slider,
-.glightbox-slide,
-.gslide {
-  transition-duration: 0.5s !important;
-}
-
-/* Trail photo gallery grid (3x3 collapsed) */
+/* =========================================================
+     6) Photo Gallery Grid (3x3 collapsed)
+     ========================================================= */
 .trail-gallery-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
+.trail-gallery-grid-item {
+  position: relative;
+  overflow: hidden;
+}
+
 .trail-gallery-grid-item img {
   width: 100%;
-  height: 240px; /* adjust if needed */
+  height: 240px;
   object-fit: cover;
   border-radius: 10px;
 }
 
-/* Collapse to first 9 items */
 .trail-gallery-grid[data-collapsed="true"]
   .trail-gallery-grid-item:nth-child(n + 10) {
   display: none;
 }
 
-/* Toggle button */
 .trail-gallery-toggle {
   margin-top: 12px;
   padding: 10px 16px;
@@ -407,21 +363,127 @@
   outline-offset: 2px;
 }
 
-.trail-gallery-grid-item {
-  position: relative;
-  overflow: hidden;
-}
-
-/* Default: one-line truncated */
-.trail-gallery-caption {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* On hover: show full caption */
 .trail-gallery-grid-item:hover .trail-gallery-caption {
   white-space: normal;
   overflow: visible;
   text-overflow: unset;
+}
+
+/* =========================================================
+     7) Lightbox (GLightbox)
+     ========================================================= */
+.glightbox-clean .gclose {
+  display: block !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 6px !important;
+}
+
+.gslide-title {
+  font-size: 1rem;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: center !important;
+  color: #fff !important;
+}
+
+.desc-inner {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.glightbox-clean .gslide-description,
+.glightbox-clean .gslide-desc {
+  background: rgba(0, 0, 0, 0.6) !important;
+}
+
+.glightbox-clean .gclose:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05);
+}
+
+.glightbox-clean .gclose:hover svg {
+  fill: #000 !important;
+}
+
+.glightbox-clean .gclose::after,
+.glightbox-clean .gclose::before,
+.glightbox-clean .gclose svg {
+  margin: 0 !important;
+  color: #fff !important;
+  fill: #fff !important;
+}
+
+.glightbox-container,
+.glightbox-slider,
+.glightbox-slide,
+.gslide {
+  transition-duration: 0.5s !important;
+}
+
+/* =========================================================
+     8) Related Posts
+     ========================================================= */
+.related-posts-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.related-post-item {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6e6e6;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.related-post-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.related-post-item:hover .related-post-image img {
+  filter: brightness(0.8);
+}
+
+.related-post-image img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.2s ease;
+}
+
+.related-post-title {
+  font-size: 1.1rem;
+  margin: 12px 16px 6px;
+}
+
+.related-post-title a {
+  color: #536941;
+  text-decoration: none;
+}
+
+.related-post-excerpt {
+  margin: 0 16px 12px;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.related-post-link {
+  display: inline-block;
+  margin: 0 16px 16px;
+  color: #536941;
+  text-decoration: underline;
+  font-size: 0.9rem;
 }

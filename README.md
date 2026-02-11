@@ -17,7 +17,9 @@ This document tracks database changes made locally that need to be replicated on
 ### 1. Added Galerie ACF Fields
 
 - Download Pliug in
-- Add ACF fields for trail_overview_images, trail_photo_gallery
+- Add ACF fields for trail_overview_images, trail_photo_gallery and other images as well as start date and end date - adjust regions to be states with wilderness areas
+- look into embedding maps
+- consider adding a in between photo layer for experience section
 
 ---
 

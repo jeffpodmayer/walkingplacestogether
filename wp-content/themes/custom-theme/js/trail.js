@@ -29,3 +29,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".js-count").forEach((el) => {
+    const target = parseInt(el.dataset.count, 10);
+    if (Number.isNaN(target)) return;
+
+    let current = 0;
+    const duration = 2500;
+    const step = Math.max(1, Math.floor(target / (duration / 16)));
+
+    const tick = () => {
+      current += step;
+      if (current >= target) {
+        el.textContent = target;
+        return;
+      }
+      el.textContent = current;
+      requestAnimationFrame(tick);
+    };
+
+    tick();
+  });
+});
