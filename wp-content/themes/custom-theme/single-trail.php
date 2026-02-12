@@ -105,8 +105,48 @@ while ( have_posts() ) :
         <?php endif; ?>
       </div>
 
-      <?php if ( $start_date || $end_date || $direction_style ) : ?>
-      <div class="trail-title-sub-row">
+      <?php
+      if ( $distance || $trip_duration || $start_date || $end_date || $direction_style ) {
+        echo '<div class="trail-details-container">';
+        echo '<div class="trail-details-left">';
+
+        if ( $distance ) {
+          echo '<div class="trail-detail-card">';
+          echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $acf_value_to_string( $distance ) ) . '">' . esc_html( $acf_value_to_string( $distance ) ) . '</span>';
+          echo '<span class="trail-detail-label">Miles</span></div>';
+        }
+
+        if ( $trip_duration ) {
+          echo '<div class="trail-detail-card">';
+          echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $acf_value_to_string( $trip_duration ) ) . '">' . esc_html( $acf_value_to_string( $trip_duration ) ) . '</span>';
+          echo '<span class="trail-detail-label">Days</span></div>';
+        }
+
+        if ( $start_date || $end_date ) {
+          $start = $start_date ? date_i18n( 'M j, Y', strtotime( $start_date ) ) : '';
+          $end   = $end_date ? date_i18n( 'M j, Y', strtotime( $end_date ) ) : '';
+          echo '<div class="trail-detail-card trail-detail-card--secondary">';
+          echo '<span class="trail-detail-value">'
+              . esc_html( $start )
+              . '<br><span class="trail-date-arrow">↓</span><br>'
+              . esc_html( $end )
+              . '</span>';
+          echo '</div>';
+        }
+
+        if ( $direction_style ) {
+          echo '<div class="trail-detail-card trail-detail-card--secondary">';
+          echo '<span class="trail-detail-value">' . esc_html( $acf_value_to_string( $direction_style ) ) . '</span>';
+          echo '</div>';
+        }
+
+        echo '</div>';
+        echo '</div>';
+      }
+      ?>
+
+      <!-- <?php if ( $start_date || $end_date || $direction_style ) : ?>
+        <div class="trail-title-sub-row">
           <?php if ( $start_date || $end_date ) : ?>
             <div class="trail-region-card">
               <span class="trail-region-value">
@@ -127,26 +167,7 @@ while ( have_posts() ) :
             </div>
           <?php endif; ?>
         </div>
-      <?php endif; ?>
-
-      <?php
-      if ( $distance || $trip_duration ) {
-        echo '<div class="trail-details-container">';
-        echo '<div class="trail-details-left">';
-        if ( $distance ) {
-          echo '<div class="trail-detail-card">';
-          echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $acf_value_to_string( $distance ) ) . '">' . esc_html( $acf_value_to_string( $distance ) ) . '</span>';
-          echo '<span class="trail-detail-label">Miles</span></div>';
-        }
-        if ( $trip_duration ) {
-          echo '<div class="trail-detail-card">';
-          echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $acf_value_to_string( $trip_duration ) ) . '">' . esc_html( $acf_value_to_string( $trip_duration ) ) . '</span>';
-          echo '<span class="trail-detail-label">Days</span></div>';
-        }
-        echo '</div>';
-        echo '</div>';
-      }
-      ?>
+      <?php endif; ?> -->
 
       <?php
       get_template_part( 'template-parts/trail/quick-links', null, [

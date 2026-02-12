@@ -8,7 +8,7 @@ if ( empty( $links ) ) {
   return;
 }
 ?>
-<div class="trail-section trail-quick-links-section">
+<div class="trail-quick-links-section">
   <div class="trail-details-right">
     <h2 class="trail-section-title">Quick Links</h2>
     <div class="trail-quick-links">
