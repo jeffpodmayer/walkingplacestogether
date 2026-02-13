@@ -73,3 +73,9 @@ add_action( 'wp_enqueue_scripts', function() {
       true
     );
   });
+
+  wp_oembed_add_provider(
+    '#https?://(www\.)?gaiagps\.com/public/.*#i',
+    'https://www.gaiagps.com/oembed',
+    true
+  );

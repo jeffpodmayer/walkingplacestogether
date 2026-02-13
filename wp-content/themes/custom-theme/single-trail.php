@@ -80,7 +80,7 @@ while ( have_posts() ) :
       <div class="trail-title-row">
         <h1 class="entry-title"><?php the_title(); ?></h1>
 
-        <?php if ( $region ) : ?>
+        <!-- <?php if ( $region ) : ?>
           <div class="trail-region-card trail-region-card--region">
             <span class="trail-region-value">
               <?php
@@ -102,13 +102,12 @@ while ( have_posts() ) :
               ?>
             </span>
           </div>
-        <?php endif; ?>
+        <?php endif; ?> -->
       </div>
 
       <?php
       if ( $distance || $trip_duration || $start_date || $end_date || $direction_style ) {
         echo '<div class="trail-details-container">';
-        echo '<div class="trail-details-left">';
 
         if ( $distance ) {
           echo '<div class="trail-detail-card">';
@@ -141,7 +140,6 @@ while ( have_posts() ) :
         }
 
         echo '</div>';
-        echo '</div>';
       }
       ?>
 
@@ -170,23 +168,52 @@ while ( have_posts() ) :
       <?php endif; ?> -->
 
       <?php
+      $quick_links = [];
+      if ( $trail_overview ) {
+        $quick_links['Trail Overview'] = '#trail-overview';
+      }
+      if ( $experience ) {
+        $quick_links['Experience'] = '#trail-experience';
+      }
+      if ( $logistics ) {
+        $quick_links['Logistics'] = '#trail-logistics';
+      }
+      if ( $gear ) {
+        $quick_links['Gear'] = '#trail-gear';
+      }
+      if ( $resources_links ) {
+        $quick_links['Resources & Links'] = '#trail-resources';
+      }
+      if ( $related_posts ) {
+        $quick_links['Related Blog Posts'] = '#trail-related-posts';
+      }
+      if ( $trail_photo_gallery ) {
+        $quick_links['Photo Gallery'] = '#trail-gallery';
+      }
+
       get_template_part( 'template-parts/trail/quick-links', null, [
-        'links' => [
-          'Experience'    => '#trail-experience',
-          'Logistics'     => '#trail-logistics',
-          'Gear'          => '#trail-gear',
-          'Photo Gallery' => '#trail-gallery',
-          'Resources'     => '#trail-resources',
-        ],
+        'links' => $quick_links,
       ] );
       ?>
 
       <?php
+      $map_url = get_field('map');
+      if ( $map_url ) {
+        // Ensure embed param is set
+        $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) );
+      
+        echo '<div class="trail-section trail-map" id="trail-map">';
+        echo '<h2 class="trail-section-title">Map</h2>';
+        echo '<div class="trail-section-content trail-map-embed">';
+        echo '<iframe src="' . esc_url( $map_src ) . '" style="border:none; width:100%; height:420px;" loading="lazy"></iframe>';
+        echo '</div></div>';
+      }
       get_template_part( 'template-parts/trail/section', null, [
         'id'      => 'trail-overview',
         'title'   => 'Trail Overview',
         'content' => $trail_overview,
       ] );
+
       get_template_part( 'template-parts/trail/gallery', null, [
         'images'      => $overview_images,
         'extra_class' => 'trail-overview-gallery',

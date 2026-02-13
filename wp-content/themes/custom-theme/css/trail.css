@@ -49,11 +49,6 @@
   border-bottom: 1px dashed #536941;
 }
 
-.trail-title-subrow {
-  display: flex;
-  flex-wrap: wrap;
-}
-
 .entry-title {
   font-size: 3.5rem;
   font-weight: 500;
@@ -84,27 +79,47 @@
   color: #fff;
 }
 
+/* Tablet sizing */
+@media (max-width: 900px) {
+  .trail-region-card {
+    padding: 0.15em 0.5em;
+    margin-top: 0.1rem;
+    max-width: 14rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .trail-region-card--region .trail-region-value {
+    display: inline-block;
+    white-space: normal;
+    line-height: 1.2;
+  }
+  .trail-region-value {
+    font-size: 0.95rem;
+  }
+  .trail-region-card--region .trail-region-value.is-wrapping {
+    margin-bottom: 0.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .trail-region-card--region {
+    display: none;
+  }
+}
+
 /* =========================================================
      3) Trail Details Cards
      ========================================================= */
 .trail-details-container {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.5rem;
   width: 100%;
 }
 
 .single-trail .trail-detail-card,
 .single-trail .trail-detail-card * {
   color: #536941;
-}
-
-.trail-details-left {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  gap: 0.5rem;
-  width: 100%;
 }
 
 .trail-detail-card {
@@ -116,7 +131,7 @@
   padding: 1rem;
   flex-direction: row;
   flex: 1 1 0;
-  gap: 0.75rem;
+  gap: 0.5rem;
   align-items: center;
   justify-content: center;
   margin: 1.25rem 0;
@@ -152,32 +167,42 @@
   font-weight: bold;
 }
 
-.trail-detail-row {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.09);
-  padding: 1rem;
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
-  align-items: center;
+/* MOBILE */
+@media (max-width: 900px) {
+  .trail-details-container {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 0.5rem;
+    margin: 0.5rem 0 1rem 0;
+  }
+
+  .trail-detail-card {
+    margin: 0.25rem 0;
+    height: 100%;
+  }
+
+  .trail-detail-value {
+    font-size: 2rem;
+  }
+
+  .trail-detail-label {
+    font-size: 1rem;
+  }
+
+  .trail-detail-card--secondary .trail-detail-value {
+    font-size: 1.1rem;
+  }
+
+  .trail-date-arrow {
+    font-size: 0.9rem;
+  }
 }
 
-.trail-detail-row-value {
-  font-size: 1.5rem;
-  font-weight: 500;
-  text-align: center;
-}
-
-.trail-detail-row-label {
-  font-size: 1rem;
-  font-weight: 500;
-  text-align: center;
-}
-
-.trail-detail-row-season {
-  margin-bottom: 1.25rem;
+@media (max-width: 600px) {
+  .trail-details-container {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* =========================================================
@@ -224,8 +249,8 @@
 }
 
 .trail-quick-links-section .trail-details-right {
-  width: 75%;
-  max-width: 900px;
+  width: 100%;
+  max-width: 100%;
 }
 
 @media (max-width: 900px) {
@@ -505,4 +530,75 @@
   color: #536941;
   text-decoration: underline;
   font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .related-posts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .related-posts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .related-post-image img {
+    height: 180px; /* optional: slightly shorter on phones */
+  }
+}
+
+/* MOBILE TITLE STYLES */
+@media (max-width: 900px) {
+  .entry-title {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+
+  .single-trail .trail-section .trail-section-title {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 900px) {
+  .trail-gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trail-gallery-grid-item img {
+    height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .trail-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trail-gallery-grid-item img {
+    height: 180px;
+  }
+}
+
+@media (max-width: 600px) {
+  .glightbox-clean .gslide-description.description-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: 30vh; /* keep it short */
+  }
+
+  .glightbox-clean .gslide-description.description-bottom .desc-inner {
+    max-height: 30vh; /* match above */
+    overflow-y: auto; /* scroll if long */
+  }
+
+  .glightbox-clean .gslide-description.description-bottom,
+  .glightbox-clean .gslide-description.description-bottom .desc-inner {
+    background: transparent !important;
+  }
 }
