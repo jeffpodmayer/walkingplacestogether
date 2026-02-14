@@ -205,7 +205,7 @@ while ( have_posts() ) :
         echo '<div class="trail-section trail-map" id="trail-map">';
         echo '<h2 class="trail-section-title">Map</h2>';
         echo '<div class="trail-section-content trail-map-embed">';
-        echo '<iframe src="' . esc_url( $map_src ) . '" style="border:none; width:100%; height:420px;" loading="lazy"></iframe>';
+        echo '<iframe src="' . esc_url( $map_src ) . '" style="border:none; width: 60%; height:420px;" loading="lazy"></iframe>';
         echo '</div></div>';
       }
       get_template_part( 'template-parts/trail/section', null, [
