@@ -50,7 +50,8 @@ while ( have_posts() ) :
   $end_date          = get_field( 'end_date' );
   $distance          = get_field( 'distance' );
   $trip_duration     = get_field( 'trip_duration_days' );
-
+  $map_url           = get_field('map');
+  $map_description   = get_field('map_description');
   $trail_overview    = get_field( 'trail_overview' );
   $experience        = get_field( 'experience' );
   $logistics         = get_field( 'logistics' );
@@ -169,6 +170,9 @@ while ( have_posts() ) :
 
       <?php
       $quick_links = [];
+      if ( $map_url ) {
+        $quick_links['Map'] = '#trail-map';
+      }
       if ( $trail_overview ) {
         $quick_links['Trail Overview'] = '#trail-overview';
       }
@@ -197,17 +201,21 @@ while ( have_posts() ) :
       ?>
 
       <?php
-      $map_url = get_field('map');
       if ( $map_url ) {
         // Ensure embed param is set
         $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) );
       
         echo '<div class="trail-section trail-map" id="trail-map">';
         echo '<h2 class="trail-section-title">Map</h2>';
+        
         echo '<div class="trail-section-content trail-map-embed">';
-        echo '<iframe src="' . esc_url( $map_src ) . '" style="border:none; width: 60%; height:420px;" loading="lazy"></iframe>';
+        if ( $map_description ) {
+          echo wp_kses_post( $map_description );
+        }
+        echo '<iframe src="' . esc_url( $map_src ) . '" style="border:none; width: 100%; height:600px;" loading="lazy"></iframe>';
         echo '</div></div>';
       }
+
       get_template_part( 'template-parts/trail/section', null, [
         'id'      => 'trail-overview',
         'title'   => 'Trail Overview',
