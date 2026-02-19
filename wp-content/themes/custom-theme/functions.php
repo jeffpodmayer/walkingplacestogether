@@ -79,3 +79,41 @@ add_action( 'wp_enqueue_scripts', function() {
     );
   });
 
+  // AIOSEO: Append ACF content for SEO analysis
+add_filter( 'aioseo_content', function( $content ) {
+  if ( ! is_singular( 'trail' ) || ! function_exists( 'get_field' ) ) {
+    return $content;
+  }
+
+  $parts = [];
+
+  // Text/WYSIWYG sections
+  $parts[] = get_field( 'trail_overview' );
+  $parts[] = get_field( 'experience' );
+  $parts[] = get_field( 'logistics' );
+  $parts[] = get_field( 'gear' );
+  $parts[] = get_field( 'resources_links' );
+  $parts[] = get_field( 'map_description' );
+
+  // Key meta
+  $parts[] = get_field( 'region' );
+  $parts[] = get_field( 'direction_style' );
+  $parts[] = get_field( 'start_date' );
+  $parts[] = get_field( 'end_date' );
+  $parts[] = get_field( 'distance' );
+  $parts[] = get_field( 'trip_duration_days' );
+
+  // Related post titles
+  $related = get_field( 'related_blog_posts' );
+  if ( $related && is_array( $related ) ) {
+    foreach ( $related as $post ) {
+      if ( is_object( $post ) && isset( $post->post_title ) ) {
+        $parts[] = $post->post_title;
+      }
+    }
+  }
+
+  $acf_text = wp_strip_all_tags( implode( ' ', array_filter( $parts ) ) );
+
+  return $content . ' ' . $acf_text;
+});
