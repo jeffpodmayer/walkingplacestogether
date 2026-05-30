@@ -3,6 +3,16 @@
  * Custom Theme functions and definitions
  */
 
+// Ensure featured image (post thumbnail) support is enabled for all post types.
+add_action( 'after_setup_theme', function() {
+  add_theme_support( 'post-thumbnails' );
+} );
+
+// Explicitly register thumbnail support on the post type itself.
+add_action( 'init', function() {
+  add_post_type_support( 'post', 'thumbnail' );
+}, 20 );
+
 // Enqueue parent and child theme styles
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
 
@@ -19,65 +29,78 @@ function custom_theme_enqueue_styles() {
     );
 }
 
-// Load Trail post type styles only on single trail pages.
+/**
+ * Returns true on trail CPT pages and on regular posts
+ * where the is_trip_report ACF field is enabled.
+ */
+function custom_theme_is_trail_page() {
+  if ( is_singular( 'trail' ) ) {
+    return true;
+  }
+  if ( is_singular( 'post' ) && function_exists( 'get_field' ) && get_field( 'is_trip_report' ) ) {
+    return true;
+  }
+  return false;
+}
+
+// Load trail styles on trail CPT pages and trip report posts.
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_trail_styles', 20 );
 
 function custom_theme_enqueue_trail_styles() {
-	if ( ! is_singular( 'trail' ) ) {
-		return;
-	}
-	wp_enqueue_style(
-		'custom-theme-trail',
-		get_stylesheet_directory_uri() . '/css/trail.css',
-		array( 'custom-theme-child-style' ),
-		wp_get_theme()->get( 'Version' )
-	);
+  if ( ! custom_theme_is_trail_page() ) {
+    return;
+  }
+  wp_enqueue_style(
+    'custom-theme-trail',
+    get_stylesheet_directory_uri() . '/css/trail.css',
+    array( 'custom-theme-child-style' ),
+    wp_get_theme()->get( 'Version' )
+  );
 }
 
-// functions.php
 add_action( 'wp_enqueue_scripts', function() {
-    if ( ! is_singular( 'trail' ) ) {
-      return;
-    }
-  
-    wp_enqueue_style(
-      'glightbox',
-      'https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css',
-      array(),
-      '3.3.0'
-    );
-  
-    wp_enqueue_script(
-      'glightbox',
-      'https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js',
-      array(),
-      '3.3.0',
-      true
-    );
-  
-    wp_add_inline_script(
-      'glightbox',
-      'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
-    );
-  });
+  if ( ! custom_theme_is_trail_page() ) {
+    return;
+  }
 
-  add_action( 'wp_enqueue_scripts', function() {
-    if ( ! is_singular( 'trail' ) ) {
-      return;
-    }
-    wp_enqueue_script(
-      'trail',
-      get_stylesheet_directory_uri() . '/js/trail.js',
-      array( 'glightbox' ),
-      wp_get_theme()->get( 'Version' ),
-      true
-    );
-    wp_oembed_add_provider(
-      '#https?://(www\.)?gaiagps\.com/public/.*#i',
-      'https://www.gaiagps.com/oembed',
-      true
-    );
-  });
+  wp_enqueue_style(
+    'glightbox',
+    'https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css',
+    array(),
+    '3.3.0'
+  );
+
+  wp_enqueue_script(
+    'glightbox',
+    'https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js',
+    array(),
+    '3.3.0',
+    true
+  );
+
+  wp_add_inline_script(
+    'glightbox',
+    'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
+  );
+} );
+
+add_action( 'wp_enqueue_scripts', function() {
+  if ( ! custom_theme_is_trail_page() ) {
+    return;
+  }
+  wp_enqueue_script(
+    'trail',
+    get_stylesheet_directory_uri() . '/js/trail.js',
+    array( 'glightbox' ),
+    wp_get_theme()->get( 'Version' ),
+    true
+  );
+  wp_oembed_add_provider(
+    '#https?://(www\.)?gaiagps\.com/public/.*#i',
+    'https://www.gaiagps.com/oembed',
+    true
+  );
+} );
 
   // AIOSEO: Append ACF content for SEO analysis
 add_filter( 'aioseo_content', function( $content ) {
