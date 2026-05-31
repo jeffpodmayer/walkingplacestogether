@@ -3,29 +3,29 @@
    ========================================================= */
 :root {
   /* Colors */
-  --color-green:        #536941;
-  --color-green-dark:   #3e5030;
-  --color-green-light:  #a8bf8f;
-  --color-dark:         #1c2018;
-  --color-text:         #333333;
-  --color-text-muted:   #666666;
-  --color-text-subtle:  #aaaaaa;
-  --color-border:       #dddddd;
-  --color-bg-light:     #f7f6f2;
-  --color-white:        #ffffff;
+  --color-green: #536941;
+  --color-green-dark: #3e5030;
+  --color-green-light: #a8bf8f;
+  --color-dark: #1c2018;
+  --color-text: #333333;
+  --color-text-muted: #666666;
+  --color-text-subtle: #aaaaaa;
+  --color-border: #dddddd;
+  --color-bg-light: #f7f6f2;
+  --color-white: #ffffff;
 
   /* Typography */
-  --font-heading: 'Rubik', sans-serif;
-  --font-body:    'Karla', sans-serif;
+  --font-heading: "Rubik", sans-serif;
+  --font-body: "Karla", sans-serif;
 
   /* Spacing */
-  --section-pad:       4rem 1.5rem;
-  --section-pad-lg:    5rem 1.5rem;
-  --max-width:         1100px;
-  --max-width-narrow:  740px;
+  --section-pad: 4rem 1.5rem;
+  --section-pad-lg: 5rem 1.5rem;
+  --max-width: 1100px;
+  --max-width-narrow: 740px;
 
   /* Shape */
-  --radius:    8px;
+  --radius: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
 }
@@ -40,16 +40,33 @@ body {
   color: var(--color-text);
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
   color: var(--color-green) !important;
   line-height: 1.25;
 }
 
-h1 { font-size: 2.5rem;  font-weight: 700; }
-h2 { font-size: 1.875rem; font-weight: 700; }
-h3 { font-size: 1.5rem;  font-weight: 600; }
-h4 { font-size: 1.25rem; font-weight: 600; }
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+h2 {
+  font-size: 1.875rem;
+  font-weight: 700;
+}
+h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
 
 p {
   margin-bottom: 1.25rem;
@@ -84,7 +101,9 @@ a:hover {
   border: 2px solid var(--color-green);
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .btn:hover {
@@ -112,6 +131,23 @@ a:hover {
 
 .site-header-primary-section-right {
   padding-right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .ast-mobile-header-wrap .ast-primary-header-bar,
+  .ast-mobile-header-wrap .main-header-bar,
+  .ast-mobile-header-wrap .ast-builder-grid-row-container-inner {
+    padding-left: 1rem !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .ast-mobile-header-wrap .site-header-primary-section-left {
+    padding-left: 0 !important;
+  }
+
+  .ast-mobile-header-wrap .site-header-primary-section-right {
+    padding-right: 0 !important;
+  }
 }
 
 /* =========================================================
@@ -188,7 +224,9 @@ a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: max-height 0.1s ease, padding 0.1s ease;
+  transition:
+    max-height 0.1s ease,
+    padding 0.1s ease;
 }
 
 .trail-section-content .wp-caption:hover .wp-caption-text,
@@ -233,7 +271,9 @@ a:hover {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: max-height 0.1s ease, padding 0.1s ease;
+  transition:
+    max-height 0.1s ease,
+    padding 0.1s ease;
 }
 
 .trail-section-content figure:hover figcaption,

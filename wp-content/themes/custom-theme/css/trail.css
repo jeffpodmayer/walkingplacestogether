@@ -9,7 +9,7 @@
   background-position: center;
   background-repeat: no-repeat;
   position: relative;
-  margin-bottom: 2rem;
+  margin-bottom: 0.75rem;
 }
 
 .trail-hero__overlay {
@@ -80,6 +80,14 @@ h2.trip-day-title {
   margin-top: 0;
 }
 
+.single-trail .single-layout-1,
+.single-trail .entry-content.clear:empty {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .trail-section {
   max-width: 100%;
   margin: 1.5rem auto;
@@ -115,7 +123,7 @@ h2.trip-day-title {
   align-items: center;
   gap: 0.5rem 1rem;
   border-bottom: 1px dashed var(--color-green);
-  padding-top: 0.75rem;
+  padding-top: 0.25rem;
   padding-bottom: 0.2rem;
 }
 

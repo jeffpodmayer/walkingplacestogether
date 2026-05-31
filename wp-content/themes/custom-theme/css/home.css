@@ -58,8 +58,8 @@ body.home .home-page {
   z-index: 1;
   display: inline-flex;
   align-items: center;
-  gap: 3rem;
-  padding: 1.5rem 3.5rem;
+  gap: 2.25rem;
+  padding: 1.5rem 3rem;
   white-space: nowrap;
   background: rgba(255, 255, 255, 0.06);
   backdrop-filter: blur(4px);
@@ -426,6 +426,43 @@ body.home .home-page {
 }
 
 @media (max-width: 640px) {
+  .home-hero {
+    height: 72vh;
+    min-height: 560px;
+    background-position: center top;
+  }
+
+  .home-hero::after {
+    background: linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.05) 35%,
+      rgba(0, 0, 0, 0.45) 100%
+    );
+  }
+
+  .home-hero__stats {
+    width: 100%;
+    bottom: 0;
+    gap: 0.75rem;
+    justify-content: center;
+    padding: 1.25rem 0.75rem;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: 0;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .home-hero__stat {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .home-hero__stat-divider {
+    height: 4rem;
+    background: rgba(255, 255, 255, 0.25);
+  }
+
   .home-stats__inner,
   .home-about__grid {
     flex-direction: column;
@@ -439,7 +476,13 @@ body.home .home-page {
   }
 
   .home-stat-value {
-    font-size: 2.25rem;
+    font-size: 2rem;
+    letter-spacing: -0.02em;
+  }
+
+  .home-stat-label {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
   }
 
   .home-person-card__photo {

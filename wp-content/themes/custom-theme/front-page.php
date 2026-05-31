@@ -101,6 +101,11 @@ get_header();
         <span class="home-stat-value"><?php echo esc_html( number_format( $stats['days'] ) ); ?></span>
         <span class="home-stat-label">Days Outside</span>
       </div>
+      <div class="home-hero__stat-divider"></div>
+      <div class="home-hero__stat">
+        <span class="home-stat-value">120</span>
+        <span class="home-stat-label">Peaks Climbed</span>
+      </div>
     </div>
   </section>
 
