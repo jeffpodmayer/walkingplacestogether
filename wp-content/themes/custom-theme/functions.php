@@ -13,18 +13,31 @@ add_action( 'init', function() {
   add_post_type_support( 'post', 'thumbnail' );
 }, 20 );
 
-// Enqueue parent and child theme styles
+// Enqueue Google Fonts, parent/child styles, and global stylesheet
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
 
 function custom_theme_enqueue_styles() {
     wp_enqueue_style(
+        'custom-theme-google-fonts',
+        'https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Karla:wght@400;500;600&display=swap',
+        array(),
+        null
+    );
+    wp_enqueue_style(
         'custom-theme-parent-style',
-        get_template_directory_uri() . '/style.css'
+        get_template_directory_uri() . '/style.css',
+        array( 'custom-theme-google-fonts' )
     );
     wp_enqueue_style(
         'custom-theme-child-style',
         get_stylesheet_directory_uri() . '/style.css',
         array( 'custom-theme-parent-style' ),
+        wp_get_theme()->get( 'Version' )
+    );
+    wp_enqueue_style(
+        'custom-theme-global',
+        get_stylesheet_directory_uri() . '/css/global.css',
+        array( 'custom-theme-child-style' ),
         wp_get_theme()->get( 'Version' )
     );
 }
@@ -103,6 +116,59 @@ add_action( 'wp_enqueue_scripts', function() {
 } );
 
   // AIOSEO: Append ACF content for SEO analysis
+// ── Home page: full-width layout class ────────────────────────────────────
+add_filter( 'body_class', function( $classes ) {
+  if ( is_front_page() ) {
+    $classes[] = 'ast-page-builder-template';
+  }
+  return $classes;
+} );
+
+// ── Archive pages: enqueue archive.css ───────────────────────────────────
+add_action( 'wp_enqueue_scripts', function() {
+  if ( ! is_page( [ 4380, 15 ] ) ) {
+    return;
+  }
+  wp_enqueue_style(
+    'custom-theme-archive',
+    get_stylesheet_directory_uri() . '/css/archive.css',
+    array( 'custom-theme-child-style' ),
+    wp_get_theme()->get( 'Version' )
+  );
+} );
+
+// ── Home page: enqueue home.css + home.js ─────────────────────────────────
+add_action( 'wp_enqueue_scripts', function() {
+  if ( ! is_front_page() ) {
+    return;
+  }
+  wp_enqueue_style(
+    'custom-theme-home',
+    get_stylesheet_directory_uri() . '/css/home.css',
+    array( 'custom-theme-child-style' ),
+    wp_get_theme()->get( 'Version' )
+  );
+  wp_enqueue_script(
+    'custom-theme-home',
+    get_stylesheet_directory_uri() . '/js/home.js',
+    array(),
+    wp_get_theme()->get( 'Version' ),
+    true
+  );
+} );
+
+// ── Home page stats: clear cached totals when a trail or trip report is saved
+add_action( 'save_post_trail', function() {
+  delete_transient( 'custom_theme_home_stats' );
+} );
+
+add_action( 'save_post', function( $post_id ) {
+  if ( get_post_type( $post_id ) === 'post' && get_field( 'is_trip_report', $post_id ) ) {
+    delete_transient( 'custom_theme_home_stats' );
+  }
+} );
+
+// AIOSEO: Append ACF content for SEO analysis
 add_filter( 'aioseo_content', function( $content ) {
   if ( ! is_singular( 'trail' ) || ! function_exists( 'get_field' ) ) {
     return $content;

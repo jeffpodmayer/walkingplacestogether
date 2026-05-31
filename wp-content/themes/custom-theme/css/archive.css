@@ -1,0 +1,199 @@
+
+/* =========================================================
+   Archive pages — full-width layout reset
+   ========================================================= */
+body.page-id-4380 #primary.archive-page,
+body.page-id-15 #primary.archive-page,
+body.page-id-4380 #content.site-content,
+body.page-id-15 #content.site-content,
+body.page-id-4380 .ast-container,
+body.page-id-15 .ast-container {
+  padding: 0 !important;
+  margin-top: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+body.page-id-4380,
+body.page-id-15 {
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   Hero banner
+   ========================================================= */
+.archive-hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  height: 80vh;
+  min-height: 500px;
+  background-color: #2a2e24;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.archive-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);
+  pointer-events: none;
+}
+
+.archive-hero__title {
+  position: relative;
+  z-index: 1;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0 0 3rem;
+  letter-spacing: -0.5px;
+  text-align: center;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
+
+/* =========================================================
+   Content wrapper
+   ========================================================= */
+.archive-content {
+  padding: 3.5rem 1.5rem 5rem;
+}
+
+.archive-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   Grid
+   ========================================================= */
+.archive-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+/* =========================================================
+   Card
+   ========================================================= */
+.archive-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.archive-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.13);
+}
+
+.archive-card__image img,
+.archive-card__image-placeholder {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+.archive-card__image-placeholder {
+  background: #ddd;
+}
+
+.archive-card__body {
+  padding: 1.25rem 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.archive-card__eyebrow {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #888;
+}
+
+.archive-card__title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.archive-card__meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-green);
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+/* =========================================================
+   Pagination
+   ========================================================= */
+.archive-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 3rem;
+}
+
+.archive-pagination .page-numbers {
+  display: inline-block;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #444;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.archive-pagination .page-numbers:hover,
+.archive-pagination .page-numbers.current {
+  background: var(--color-green);
+  border-color: var(--color-green);
+  color: #fff;
+}
+
+/* =========================================================
+   Empty state
+   ========================================================= */
+.archive-empty {
+  text-align: center;
+  color: #888;
+  font-size: 1rem;
+  padding: 3rem 0;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 860px) {
+  .archive-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .archive-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .archive-hero__title {
+    font-size: 1.75rem;
+  }
+}

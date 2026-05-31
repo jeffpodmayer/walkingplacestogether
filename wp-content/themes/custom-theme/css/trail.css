@@ -23,34 +23,6 @@
   display: block;
 }
 
-/* =========================================================
-   Scroll to Top Button
-   ========================================================= */
-#ast-scroll-top {
-  background-color: #536941 !important;
-  color: #ffffff !important;
-  border-radius: 6px !important;
-  width: 2.8em !important;
-  height: 2.8em !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  line-height: 1 !important;
-}
-
-#ast-scroll-top .ast-icon.icon-arrow svg {
-  transform: translate(0, 0) rotate(180deg) !important;
-  margin: 0 !important;
-  display: block !important;
-  width: 1.2em !important;
-  height: 1.2em !important;
-  vertical-align: unset !important;
-}
-
-#ast-scroll-top:hover {
-  background-color: #3e5030 !important;
-}
 
 /* =========================================================
    Day by Day Section
@@ -60,8 +32,8 @@
 }
 
 h2.trip-day-title {
-  font-size: 40px !important;
-  border-bottom: 1px dashed #536941;
+  font-size: 1.75rem !important;
+  border-bottom: 1px dashed var(--color-green);
   padding-bottom: 0.1rem;
   margin-bottom: 0.75rem;
   line-height: 1.3;
@@ -96,7 +68,6 @@ h2.trip-day-title {
 .trail-section-title {
   font-size: 1.75rem;
   margin-bottom: 0.5rem;
-  color: #222;
 }
 
 .trail-section-content {
@@ -110,7 +81,7 @@ h2.trip-day-title {
 }
 
 .trail-section-content a {
-  color: #536941;
+  color: var(--color-green);
   text-decoration: underline;
   font-weight: 500;
 }
@@ -123,7 +94,7 @@ h2.trip-day-title {
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem 1rem;
-  border-bottom: 1px dashed #536941;
+  border-bottom: 1px dashed var(--color-green);
   padding-top: 0.75rem;
   padding-bottom: 0.2rem;
 }
@@ -138,20 +109,20 @@ h2.trip-day-title {
 
 .trail-region-card {
   display: inline-flex;
-  border: 1px solid #536941;
-  border-radius: 8px;
+  border: 1px solid var(--color-green);
+  border-radius: var(--radius);
   padding: 0 0.6em;
-  background: #536941;
+  background: var(--color-green);
 }
 
 .trail-region-card--region {
   background: #fff;
-  border-color: #536941;
+  border-color: var(--color-green);
   margin-top: 0.6rem;
 }
 
 .trail-region-card.trail-region-card--region .trail-region-value {
-  color: #536941;
+  color: var(--color-green);
 }
 
 .trail-region-value {
@@ -200,13 +171,13 @@ h2.trip-day-title {
 
 .single-trail .trail-detail-card,
 .single-trail .trail-detail-card * {
-  color: #536941;
+  color: var(--color-green);
 }
 
 .trail-detail-card {
   background: #fff;
   border: 1px solid #e0e0e0;
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.09);
   display: flex;
   padding: 1rem;
@@ -296,7 +267,7 @@ h2.trip-day-title {
   width: 300px;
   background: #f8f8f8;
   border: 1px solid #e6e6e6;
-  border-radius: 8px;
+  border-radius: var(--radius);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.06);
   padding: 28px 32px;
 }
@@ -304,6 +275,8 @@ h2.trip-day-title {
 .trail-quick-links {
   display: flex;
   flex-direction: column;
+  gap: 0.1rem;
+  line-height: 1.3;
 }
 
 .trail-quick-links-label {
@@ -313,7 +286,7 @@ h2.trip-day-title {
 }
 
 .trail-quick-links a {
-  color: #536941;
+  color: var(--color-green);
   text-decoration: none;
   font-size: 1.1rem;
 }
@@ -325,7 +298,7 @@ h2.trip-day-title {
 .trail-quick-links-section .trail-section-title {
   font-size: 1.2rem;
   margin-bottom: 0.4rem;
-  border-bottom: 1px dashed #536941;
+  border-bottom: 1px dashed var(--color-green);
   padding-bottom: 0.5rem;
 }
 
@@ -371,7 +344,7 @@ h2.trip-day-title {
   height: 240px;
   object-fit: cover;
   display: block;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
 .trail-gallery--1 .trail-gallery-item img {
@@ -443,7 +416,7 @@ h2.trip-day-title {
   width: 100%;
   height: 240px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: var(--radius);
 }
 
 .trail-gallery-grid[data-collapsed="true"]
@@ -456,7 +429,7 @@ h2.trip-day-title {
   padding: 10px 16px;
   border: 1px solid #ccc;
   background: #fff;
-  border-radius: 8px;
+  border-radius: var(--radius);
   cursor: pointer;
   font-size: 0.9rem;
 }
@@ -484,7 +457,7 @@ h2.trip-day-title {
 }
 
 .trail-gallery-toggle:focus-visible {
-  outline: 2px solid #536941;
+  outline: 2px solid var(--color-green);
   outline-offset: 2px;
 }
 
@@ -562,7 +535,7 @@ h2.trip-day-title {
 }
 
 .related-post-item {
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: #fff;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
@@ -595,7 +568,7 @@ h2.trip-day-title {
 }
 
 .related-post-title a {
-  color: #536941;
+  color: var(--color-green);
   text-decoration: none;
 }
 
@@ -608,7 +581,7 @@ h2.trip-day-title {
 .related-post-link {
   display: inline-block;
   margin: 0 16px 16px;
-  color: #536941;
+  color: var(--color-green);
   text-decoration: underline;
   font-size: 0.9rem;
 }
