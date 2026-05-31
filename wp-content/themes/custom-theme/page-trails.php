@@ -39,10 +39,17 @@ get_header();
           <?php while ( $trails_query->have_posts() ) : $trails_query->the_post(); ?>
             <?php
             $post_id  = get_the_ID();
-            $thumb    = get_the_post_thumbnail_url( $post_id, 'large' );
-            $distance = function_exists( 'get_field' ) ? (float) get_field( 'distance', $post_id ) : 0;
-            $days     = function_exists( 'get_field' ) ? (float) get_field( 'trip_duration_days', $post_id ) : 0;
-            $region   = function_exists( 'get_field' ) ? get_field( 'region', $post_id ) : '';
+            $thumb    = '';
+            if ( function_exists( 'get_field' ) ) {
+              $thumb = custom_theme_get_image_url( get_field( 'hero_image', $post_id ), 'large' );
+            }
+            if ( ! $thumb ) {
+              $thumb = get_the_post_thumbnail_url( $post_id, 'large' );
+            }
+            $distance   = function_exists( 'get_field' ) ? (float) get_field( 'distance', $post_id ) : 0;
+            $days       = function_exists( 'get_field' ) ? (float) get_field( 'trip_duration_days', $post_id ) : 0;
+            $region     = function_exists( 'get_field' ) ? get_field( 'region', $post_id ) : '';
+            $trail_date = function_exists( 'get_field' ) ? custom_theme_format_trail_date_range( get_field( 'start_date', $post_id ), get_field( 'end_date', $post_id ) ) : '';
             if ( is_array( $region ) ) {
               $parts = [];
               foreach ( $region as $item ) {
@@ -66,6 +73,9 @@ get_header();
                   <span class="archive-card__eyebrow"><?php echo esc_html( $region ); ?></span>
                 <?php endif; ?>
                 <h2 class="archive-card__title"><?php the_title(); ?></h2>
+                <?php if ( $trail_date ) : ?>
+                  <span class="archive-card__date"><?php echo esc_html( $trail_date ); ?></span>
+                <?php endif; ?>
                 <div class="archive-card__meta">
                   <?php if ( $distance ) : ?>
                     <span><?php echo esc_html( number_format( $distance, 1 ) ); ?> mi</span>

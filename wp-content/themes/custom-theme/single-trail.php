@@ -65,7 +65,17 @@ while ( have_posts() ) :
 
   $trail_photo_gallery = get_field( 'trail_photo_gallery' );
   $related_posts        = get_field( 'related_blog_posts' );
+  $hero_image           = get_field( 'hero_image' );
+  $hero_url             = custom_theme_get_image_url( $hero_image, 'full' );
+  if ( ! $hero_url ) {
+    $hero_url = get_the_post_thumbnail_url( get_the_ID(), 'full' );
+  }
 ?>
+  <?php if ( $hero_url ) : ?>
+    <div class="trail-hero" style="background-image: url('<?php echo esc_url( $hero_url ); ?>');">
+      <div class="trail-hero__overlay"></div>
+    </div>
+  <?php endif; ?>
   <?php astra_entry_before(); ?>
   <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
     <?php astra_entry_top(); ?>

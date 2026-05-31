@@ -150,7 +150,7 @@ get_header();
       </div>
 
       <div class="home-reports__footer">
-        <a class="home-reports__all-link" href="<?php echo esc_url( get_post_type_archive_link( 'post' ) ?: home_url( '/trip-reports/' ) ); ?>">View All Trip Reports →</a>
+        <a class="home-reports__all-link" href="<?php echo esc_url( home_url( '/trip-reports/' ) ); ?>">View All Trip Reports →</a>
       </div>
     </div>
   </section>
@@ -164,10 +164,17 @@ get_header();
 
         <?php foreach ( $recent_trails as $trail ) : ?>
           <?php
-          $thumb    = get_the_post_thumbnail_url( $trail->ID, 'large' );
-          $distance = function_exists( 'get_field' ) ? (float) get_field( 'distance', $trail->ID ) : 0;
-          $days     = function_exists( 'get_field' ) ? (float) get_field( 'trip_duration_days', $trail->ID ) : 0;
-          $region   = function_exists( 'get_field' ) ? get_field( 'region', $trail->ID ) : '';
+          $thumb = '';
+          if ( function_exists( 'get_field' ) ) {
+            $thumb = custom_theme_get_image_url( get_field( 'hero_image', $trail->ID ), 'large' );
+          }
+          if ( ! $thumb ) {
+            $thumb = get_the_post_thumbnail_url( $trail->ID, 'large' );
+          }
+          $distance   = function_exists( 'get_field' ) ? (float) get_field( 'distance', $trail->ID ) : 0;
+          $days       = function_exists( 'get_field' ) ? (float) get_field( 'trip_duration_days', $trail->ID ) : 0;
+          $region     = function_exists( 'get_field' ) ? get_field( 'region', $trail->ID ) : '';
+          $trail_date = function_exists( 'get_field' ) ? custom_theme_format_trail_date_range( get_field( 'start_date', $trail->ID ), get_field( 'end_date', $trail->ID ) ) : '';
           if ( is_array( $region ) ) {
             $region_parts = [];
             foreach ( $region as $item ) {
@@ -193,6 +200,9 @@ get_header();
                 <span class="home-trail-card__region"><?php echo esc_html( $region ); ?></span>
               <?php endif; ?>
               <h3 class="home-trail-card__title"><?php echo esc_html( $trail->post_title ); ?></h3>
+              <?php if ( $trail_date ) : ?>
+                <span class="home-trail-card__date"><?php echo esc_html( $trail_date ); ?></span>
+              <?php endif; ?>
               <div class="home-trail-card__meta">
                 <?php if ( $distance ) : ?>
                   <span><?php echo esc_html( number_format( $distance, 1 ) ); ?> mi</span>
@@ -209,7 +219,7 @@ get_header();
       </div>
 
       <div class="home-trails__footer">
-        <a class="home-trails__all-link" href="<?php echo esc_url( get_post_type_archive_link( 'trail' ) ?: home_url( '/trails/' ) ); ?>">View All Trails &amp; Routes →</a>
+        <a class="home-trails__all-link" href="<?php echo esc_url( home_url( '/trails/' ) ); ?>">View All Trails &amp; Routes →</a>
       </div>
     </div>
   </section>

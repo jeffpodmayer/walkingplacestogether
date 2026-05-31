@@ -11,7 +11,66 @@ add_action( 'after_setup_theme', function() {
 // Explicitly register thumbnail support on the post type itself.
 add_action( 'init', function() {
   add_post_type_support( 'post', 'thumbnail' );
+  add_post_type_support( 'trail', 'thumbnail' );
 }, 20 );
+
+function custom_theme_get_image_url( $image, $size = 'large' ) {
+  if ( empty( $image ) ) {
+    return '';
+  }
+
+  if ( is_array( $image ) ) {
+    return $image['sizes'][ $size ] ?? $image['url'] ?? '';
+  }
+
+  if ( is_numeric( $image ) ) {
+    return wp_get_attachment_image_url( (int) $image, $size ) ?: '';
+  }
+
+  return is_string( $image ) ? $image : '';
+}
+
+function custom_theme_parse_acf_date( $date ) {
+  if ( empty( $date ) ) {
+    return null;
+  }
+
+  if ( $date instanceof DateTimeInterface ) {
+    return $date;
+  }
+
+  $date = trim( (string) $date );
+  if ( preg_match( '/^\d{8}$/', $date ) ) {
+    $parsed = DateTime::createFromFormat( 'Ymd', $date );
+    return $parsed ?: null;
+  }
+
+  $timestamp = strtotime( $date );
+  return $timestamp ? ( new DateTime() )->setTimestamp( $timestamp ) : null;
+}
+
+function custom_theme_format_trail_date_range( $start_date, $end_date = '' ) {
+  $start = custom_theme_parse_acf_date( $start_date );
+  $end   = custom_theme_parse_acf_date( $end_date );
+
+  if ( ! $start && ! $end ) {
+    return '';
+  }
+
+  if ( ! $start ) {
+    return $end->format( 'F Y' );
+  }
+
+  if ( ! $end || $start->format( 'Ym' ) === $end->format( 'Ym' ) ) {
+    return $start->format( 'F Y' );
+  }
+
+  if ( $start->format( 'Y' ) === $end->format( 'Y' ) ) {
+    return $start->format( 'F' ) . ' - ' . $end->format( 'F Y' );
+  }
+
+  return $start->format( 'F Y' ) . ' - ' . $end->format( 'F Y' );
+}
 
 // Enqueue Google Fonts, parent/child styles, and global stylesheet
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
