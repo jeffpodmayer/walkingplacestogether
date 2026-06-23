@@ -15,7 +15,11 @@
 .trail-hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.45));
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.2),
+    rgba(0, 0, 0, 0.45)
+  );
 }
 
 /* =========================================================
@@ -42,7 +46,6 @@
   object-position: center;
   display: block;
 }
-
 
 /* =========================================================
    Day by Day Section
@@ -228,6 +231,18 @@ h2.trip-day-title {
   line-height: 1.1;
 }
 
+.trail-detail-card--date {
+  flex-direction: column;
+  gap: 0;
+}
+
+.trail-detail-card--date .trail-detail-value {
+  font-size: 2.5rem;
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: 0.01em;
+}
+
 .trail-date-arrow {
   display: inline-block;
   font-size: 1.1rem;
@@ -272,6 +287,14 @@ h2.trip-day-title {
 
   .trail-detail-card--secondary .trail-detail-value {
     font-size: 1.1rem;
+  }
+
+  .trail-detail-card--date .trail-detail-value {
+    font-size: 1.75rem;
+  }
+
+  .trail-detail-card--date .trail-detail-label {
+    font-size: 0.75rem;
   }
 
   .trail-date-arrow {
@@ -638,6 +661,11 @@ h2.trip-day-title {
     overflow-wrap: anywhere;
   }
 
+  .single-day-trip-report .entry-title,
+  .type-post.single-day-trip-report .entry-title {
+    font-size: clamp(1.4rem, 4vw, 2.25rem) !important;
+  }
+
   .single-trail .trail-section .trail-section-title,
   h2.trip-day-title {
     font-size: clamp(1.5rem, 4vw, 2rem) !important;
@@ -668,6 +696,11 @@ h2.trip-day-title {
 
 .type-post .entry-title {
   font-size: clamp(1.3rem, 2.5vw, 2rem) !important;
+}
+
+.single-day-trip-report .entry-title,
+.type-post.single-day-trip-report .entry-title {
+  font-size: clamp(1.5rem, 3vw, 2.75rem) !important;
 }
 
 /* =========================================================

@@ -1,0 +1,39 @@
+/**
+ * Admin fixes for ACF Galerie 4 field layout in the post editor.
+ * Overrides plugin max-height that collapses galleries and overlaps WYSIWYG fields.
+ */
+
+.acf-field-galerie-4 {
+  clear: both;
+  margin-bottom: 1.25rem !important;
+  overflow: visible;
+}
+
+.acf-field-galerie-4 .acf-galerie-4-container {
+  max-height: none !important;
+  min-height: 140px;
+  margin-bottom: 1.5rem !important;
+  overflow: visible;
+}
+
+.acf-field-galerie-4 .acf-galerie-4-attachments {
+  min-height: 120px;
+}
+
+/* Keep WYSIWYG toolbars in normal flow below gallery fields */
+.acf-field-wysiwyg {
+  clear: both;
+  position: relative;
+  z-index: 1;
+  margin-top: 0.5rem;
+}
+
+.acf-field-wysiwyg .wp-editor-tools {
+  position: relative;
+  z-index: 2;
+}
+
+.acf-field-galerie-4 + .acf-field {
+  margin-top: 1rem;
+  clear: both;
+}

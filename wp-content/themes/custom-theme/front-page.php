@@ -9,12 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // ── Stats (cached for 12 hours) ───────────────────────────────────────────
-// Sums distance and trip_duration_days from trail CPT posts and trip reports.
-// Cache is cleared when any trail or trip report post is saved.
+// Sums distance, days, peaks_climbed, and bulgers_climbed from trails and reports.
+// Cache is cleared when any trail or trip/day-trip report post is saved.
 $stats = get_transient( 'custom_theme_home_stats' );
 if ( false === $stats ) {
-  $total_miles = 0;
-  $total_days  = 0;
+  $total_miles   = 0;
+  $total_days    = 0;
+  $total_peaks   = 0;
+  $total_bulgers = 0;
 
   $trail_ids = get_posts( [
     'post_type'      => 'trail',
@@ -24,8 +26,13 @@ if ( false === $stats ) {
   ] );
 
   foreach ( $trail_ids as $id ) {
-    $total_miles += (float) get_field( 'distance', $id );
-    $total_days  += (float) get_field( 'trip_duration_days', $id );
+    if ( ! function_exists( 'get_field' ) ) {
+      continue;
+    }
+    $total_miles   += (float) get_field( 'distance', $id );
+    $total_days    += (float) get_field( 'trip_duration_days', $id );
+    $total_peaks   += (float) get_field( 'peaks_climbed', $id );
+    $total_bulgers += (float) get_field( 'bulgers_climbed', $id );
   }
 
   $report_ids = get_posts( [
@@ -33,17 +40,34 @@ if ( false === $stats ) {
     'posts_per_page' => -1,
     'post_status'    => 'publish',
     'fields'         => 'ids',
-    'meta_query'     => [ [ 'key' => 'is_trip_report', 'value' => '1' ] ],
+    'meta_query'     => [
+      'relation' => 'OR',
+      [
+        'key'   => 'is_trip_report',
+        'value' => '1',
+      ],
+      [
+        'key'   => 'is_day_trip_report',
+        'value' => '1',
+      ],
+    ],
   ] );
 
   foreach ( $report_ids as $id ) {
-    $total_miles += (float) get_field( 'distance', $id );
-    $total_days  += (float) get_field( 'trip_duration_days', $id );
+    if ( ! function_exists( 'get_field' ) ) {
+      continue;
+    }
+    $total_miles   += (float) get_field( 'distance', $id );
+    $total_days    += (float) get_field( 'trip_duration_days', $id );
+    $total_peaks   += (float) get_field( 'peaks_climbed', $id );
+    $total_bulgers += (float) get_field( 'bulgers_climbed', $id );
   }
 
   $stats = [
-    'miles' => (int) round( $total_miles ),
-    'days'  => (int) round( $total_days ),
+    'miles'   => (int) round( $total_miles ),
+    'days'    => (int) round( $total_days ),
+    'peaks'   => (int) round( $total_peaks ),
+    'bulgers' => (int) round( $total_bulgers ),
   ];
 
   set_transient( 'custom_theme_home_stats', $stats, 12 * HOUR_IN_SECONDS );
@@ -101,11 +125,18 @@ get_header();
         <span class="home-stat-value"><?php echo esc_html( number_format( $stats['days'] ) ); ?></span>
         <span class="home-stat-label">Days Outside</span>
       </div>
+      <?php if ( false ) : // Set to true to show Peaks / Bulgers hero stats ?>
       <div class="home-hero__stat-divider"></div>
       <div class="home-hero__stat">
-        <span class="home-stat-value">120</span>
+        <span class="home-stat-value"><?php echo esc_html( number_format( $stats['peaks'] ) ); ?></span>
         <span class="home-stat-label">Peaks Climbed</span>
       </div>
+      <div class="home-hero__stat-divider"></div>
+      <div class="home-hero__stat">
+        <span class="home-stat-value"><?php echo esc_html( number_format( $stats['bulgers'] ) ); ?></span>
+        <span class="home-stat-label">Bulgers Climbed</span>
+      </div>
+      <?php endif; ?>
     </div>
   </section>
 

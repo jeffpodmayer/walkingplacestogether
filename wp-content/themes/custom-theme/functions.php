@@ -109,7 +109,11 @@ function custom_theme_is_trail_page() {
   if ( is_singular( 'trail' ) ) {
     return true;
   }
-  if ( is_singular( 'post' ) && function_exists( 'get_field' ) && get_field( 'is_trip_report' ) ) {
+  if (
+    is_singular( 'post' )
+    && function_exists( 'get_field' )
+    && ( get_field( 'is_trip_report' ) || get_field( 'is_day_trip_report' ) )
+  ) {
     return true;
   }
   return false;
@@ -222,7 +226,10 @@ add_action( 'save_post_trail', function() {
 } );
 
 add_action( 'save_post', function( $post_id ) {
-  if ( get_post_type( $post_id ) === 'post' && get_field( 'is_trip_report', $post_id ) ) {
+  if ( get_post_type( $post_id ) !== 'post' || ! function_exists( 'get_field' ) ) {
+    return;
+  }
+  if ( get_field( 'is_trip_report', $post_id ) || get_field( 'is_day_trip_report', $post_id ) ) {
     delete_transient( 'custom_theme_home_stats' );
   }
 } );
@@ -265,3 +272,25 @@ add_filter( 'aioseo_content', function( $content ) {
 
   return $content . ' ' . $acf_text;
 });
+
+// ── ACF Galerie 4: default return_format for legacy field definitions ────
+add_filter( 'acf/load_field/type=galerie-4', function( $field ) {
+  if ( empty( $field['return_format'] ) ) {
+    $field['return_format'] = 'media_array';
+  }
+  return $field;
+} );
+
+// ── Admin: ACF Galerie 4 layout fixes in post editor ─────────────────────
+add_action( 'admin_enqueue_scripts', function( $hook ) {
+  if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) {
+    return;
+  }
+
+  wp_enqueue_style(
+    'custom-theme-admin-galerie-fix',
+    get_stylesheet_directory_uri() . '/css/admin-galerie-fix.css',
+    [],
+    wp_get_theme()->get( 'Version' )
+  );
+}, 99 );

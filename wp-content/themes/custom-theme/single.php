@@ -3,9 +3,8 @@
  * The template for displaying all single posts.
  * Overrides the Astra parent theme single.php.
  *
- * If the post has the is_trip_report ACF field enabled,
- * it renders the structured trip report layout. Otherwise
- * it falls back to Astra's default content loop.
+ * If a report flag is enabled in ACF, it renders the matching
+ * structured report layout. Otherwise it falls back to Astra.
  *
  * @package Custom_Theme
  */
@@ -26,7 +25,12 @@ if ( astra_page_layout() === 'left-sidebar' ) {
   <?php astra_primary_content_top(); ?>
 
   <?php
-  if ( function_exists( 'get_field' ) && get_field( 'is_trip_report' ) ) {
+  if ( function_exists( 'get_field' ) && get_field( 'is_day_trip_report' ) ) {
+    while ( have_posts() ) :
+      the_post();
+      get_template_part( 'template-parts/single/content', 'day-trip-report' );
+    endwhile;
+  } elseif ( function_exists( 'get_field' ) && get_field( 'is_trip_report' ) ) {
     while ( have_posts() ) :
       the_post();
       get_template_part( 'template-parts/single/content', 'trip-report' );
