@@ -72,6 +72,19 @@ function custom_theme_format_trail_date_range( $start_date, $end_date = '' ) {
   return $start->format( 'F Y' ) . ' - ' . $end->format( 'F Y' );
 }
 
+function custom_theme_format_distance( $distance ) {
+  $distance = (float) $distance;
+  if ( $distance == (int) $distance ) {
+    return (string) (int) $distance;
+  }
+  return number_format( $distance, 1 );
+}
+
+function custom_theme_format_days( $days ) {
+  $days = (int) $days;
+  return $days === 1 ? '1 day' : $days . ' days';
+}
+
 // Enqueue Google Fonts, parent/child styles, and global stylesheet
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
 
@@ -294,3 +307,26 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
     wp_get_theme()->get( 'Version' )
   );
 }, 99 );
+
+// ── Header site title: wrap custom-HTML <p> with a home page link ─────────
+add_action( 'wp_footer', function() {
+  $home = esc_url( home_url( '/' ) );
+  ?>
+  <script>
+  (function () {
+    var masthead = document.getElementById('masthead');
+    if (!masthead) return;
+    masthead.querySelectorAll('p').forEach(function (p) {
+      if (p.closest('a')) return; // already linked
+      var text = p.textContent.trim().toUpperCase();
+      if (text.indexOf('WALKING PLACES TOGETHER') === -1) return;
+      var a = document.createElement('a');
+      a.href = '<?php echo $home; ?>';
+      a.style.cssText = 'text-decoration:none;color:inherit;cursor:pointer;display:block;';
+      p.parentNode.insertBefore(a, p);
+      a.appendChild(p);
+    });
+  })();
+  </script>
+  <?php
+} );

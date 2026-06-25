@@ -94,6 +94,10 @@ $jeff_src    = is_array( $jeff_photo )    ? ( $jeff_photo['url'] ?? '' )    : (s
 // Add an ACF textarea or WYSIWYG field on this page:
 //   Field name: why_we_do_it
 $why_we_do_it = function_exists( 'get_field' ) ? get_field( 'why_we_do_it', $page_id ) : '';
+$has_why_content = $why_we_do_it && trim( wp_strip_all_tags( $why_we_do_it ) );
+$has_about_content = $carolyn_src || $jeff_src
+  || ( $carolyn_bio && trim( wp_strip_all_tags( $carolyn_bio ) ) )
+  || ( $jeff_bio && trim( wp_strip_all_tags( $jeff_bio ) ) );
 
 // ── Recent trip reports ────────────────────────────────────────────────────
 $recent_reports = get_posts( [
@@ -172,10 +176,10 @@ get_header();
               <h3 class="home-report-card__title"><?php echo esc_html( $report->post_title ); ?></h3>
               <div class="home-report-card__meta">
                 <?php if ( $distance ) : ?>
-                  <span><?php echo esc_html( number_format( $distance, 1 ) ); ?> mi</span>
+                  <span><?php echo esc_html( custom_theme_format_distance( $distance ) ); ?> mi</span>
                 <?php endif; ?>
                 <?php if ( $days ) : ?>
-                  <span><?php echo esc_html( (int) $days ); ?> days</span>
+                  <span><?php echo esc_html( custom_theme_format_days( $days ) ); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -241,10 +245,10 @@ get_header();
               <?php endif; ?>
               <div class="home-trail-card__meta">
                 <?php if ( $distance ) : ?>
-                  <span><?php echo esc_html( number_format( $distance, 1 ) ); ?> mi</span>
+                  <span><?php echo esc_html( custom_theme_format_distance( $distance ) ); ?> mi</span>
                 <?php endif; ?>
                 <?php if ( $days ) : ?>
-                  <span><?php echo esc_html( (int) $days ); ?> days</span>
+                  <span><?php echo esc_html( custom_theme_format_days( $days ) ); ?></span>
                 <?php endif; ?>
               </div>
             </div>
@@ -261,24 +265,24 @@ get_header();
   </section>
   <?php endif; ?>
 
+  <?php if ( $has_why_content ) : ?>
   <section class="home-why">
     <div class="home-why__inner">
       <h2 class="home-why__title">Why We Do It</h2>
       <div class="home-why__content">
-        <?php if ( $why_we_do_it ) : ?>
-          <?php echo wp_kses_post( $why_we_do_it ); ?>
-        <?php else : ?>
-          <p>Add your text by creating an ACF field named <code>why_we_do_it</code> on the Home page.</p>
-        <?php endif; ?>
+        <?php echo wp_kses_post( $why_we_do_it ); ?>
       </div>
     </div>
   </section>
+  <?php endif; ?>
 
+  <?php if ( $has_about_content ) : ?>
   <section class="home-about">
     <div class="home-about__inner">
       <h2 class="home-about__title">About Us</h2>
       <div class="home-about__grid">
 
+        <?php if ( $carolyn_src || ( $carolyn_bio && trim( wp_strip_all_tags( $carolyn_bio ) ) ) ) : ?>
         <div class="home-person-card">
           <?php if ( $carolyn_src ) : ?>
             <img class="home-person-card__photo" src="<?php echo esc_url( $carolyn_src ); ?>" alt="Carolyn Blessing">
@@ -288,7 +292,9 @@ get_header();
             <p class="home-person-card__bio"><?php echo wp_kses_post( $carolyn_bio ); ?></p>
           <?php endif; ?>
         </div>
+        <?php endif; ?>
 
+        <?php if ( $jeff_src || ( $jeff_bio && trim( wp_strip_all_tags( $jeff_bio ) ) ) ) : ?>
         <div class="home-person-card">
           <?php if ( $jeff_src ) : ?>
             <img class="home-person-card__photo" src="<?php echo esc_url( $jeff_src ); ?>" alt="Jeff Podmayer">
@@ -298,10 +304,12 @@ get_header();
             <p class="home-person-card__bio"><?php echo wp_kses_post( $jeff_bio ); ?></p>
           <?php endif; ?>
         </div>
+        <?php endif; ?>
 
       </div>
     </div>
   </section>
+  <?php endif; ?>
 
 </div><!-- .home-page -->
 

@@ -1,13 +1,10 @@
-
 /* =========================================================
    Archive pages — full-width layout reset
    ========================================================= */
 body.page-id-4380 #primary.archive-page,
 body.page-id-15 #primary.archive-page,
 body.page-id-4380 #content.site-content,
-body.page-id-15 #content.site-content,
-body.page-id-4380 .ast-container,
-body.page-id-15 .ast-container {
+body.page-id-15 #content.site-content {
   padding: 0 !important;
   margin-top: 0 !important;
   max-width: 100% !important;
@@ -40,7 +37,11 @@ body.page-id-15 {
 .archive-hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.6) 100%);
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.6) 100%
+  );
   pointer-events: none;
 }
 
@@ -53,7 +54,7 @@ body.page-id-15 {
   margin: 0 0 3rem;
   letter-spacing: -0.5px;
   text-align: center;
-  text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* =========================================================
@@ -89,7 +90,9 @@ body.page-id-15 {
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
   text-decoration: none;
   color: inherit;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .archive-card:hover {
@@ -168,7 +171,9 @@ body.page-id-15 {
   font-size: 0.9rem;
   color: #444;
   text-decoration: none;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .archive-pagination .page-numbers:hover,

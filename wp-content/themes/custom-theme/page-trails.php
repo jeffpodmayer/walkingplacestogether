@@ -78,10 +78,10 @@ get_header();
                 <?php endif; ?>
                 <div class="archive-card__meta">
                   <?php if ( $distance ) : ?>
-                    <span><?php echo esc_html( number_format( $distance, 1 ) ); ?> mi</span>
+                    <span><?php echo esc_html( custom_theme_format_distance( $distance ) ); ?> mi</span>
                   <?php endif; ?>
                   <?php if ( $days ) : ?>
-                    <span><?php echo esc_html( (int) $days ); ?> days</span>
+                    <span><?php echo esc_html( custom_theme_format_days( $days ) ); ?></span>
                   <?php endif; ?>
                 </div>
               </div>
