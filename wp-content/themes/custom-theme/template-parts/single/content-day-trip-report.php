@@ -128,45 +128,56 @@ $hero = $normalize_image( $hero_image );
 
   <div class="trail-content-wrap">
 
-    <div class="trail-title-row">
-      <h1 class="entry-title"><?php the_title(); ?></h1>
-    </div>
-
-    <?php if ( $distance || $trip_date ) : ?>
-      <div class="trail-details-container">
-        <?php if ( $distance ) : ?>
-          <div class="trail-detail-card">
-            <span class="trail-detail-value js-count" data-count="<?php echo esc_attr( $distance ); ?>"><?php echo esc_html( $distance ); ?></span>
-            <span class="trail-detail-label">Miles</span>
-          </div>
-        <?php endif; ?>
-
-        <?php if ( $trip_date ) : ?>
-          <div class="trail-detail-card trail-detail-card--date">
-            <span class="trail-detail-value"><?php echo esc_html( $trip_date ); ?></span>
-          </div>
-        <?php endif; ?>
-      </div>
-    <?php endif; ?>
+    <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
 
     <?php
-    $quick_links = [];
-    if ( $map_url )       $quick_links['Map']             = '#day-trip-map';
-    if ( $trip_overview )   $quick_links['Trip Report'] = '#day-trip-report';
-    if ( $gear_notes )      $quick_links['Gear']        = '#day-trip-gear';
-    if ( $resource_links )  $quick_links['Resources & Links']     = '#day-trip-resources';
-    if ( $related_reports ) $quick_links['Related Trip Reports'] = '#day-trip-related';
-    if ( $photo_gallery )   $quick_links['Photo Gallery']         = '#day-trip-gallery';
-
-    get_template_part( 'template-parts/trail/quick-links', null, [
-      'links' => $quick_links,
-    ] );
+    // Meta bar (miles / date), rendered below the Trip Report heading
+    $meta_bar_html = '';
+    if ( $distance || $trip_date ) {
+      $meta_bar_html .= '<div class="trip-meta-bar">';
+      if ( $distance ) {
+        $meta_bar_html .= '<div class="trip-meta-item">'
+          . custom_theme_trip_meta_icon( 'route' )
+          . '<span>' . esc_html( custom_theme_format_distance( $distance ) ) . ' miles</span>'
+          . '</div>';
+      }
+      if ( $trip_date ) {
+        $meta_bar_html .= '<div class="trip-meta-item">'
+          . custom_theme_trip_meta_icon( 'calendar' )
+          . '<span>' . esc_html( $trip_date ) . '</span>'
+          . '</div>';
+      }
+      $meta_bar_html .= '</div>';
+    }
     ?>
+
+    <?php
+    $nav_items = [];
+    if ( $map_url )         $nav_items[] = [ 'icon' => 'map', 'label' => 'Route Map', 'href' => '#day-trip-map' ];
+    if ( $trip_overview )   $nav_items[] = [ 'icon' => 'compass', 'label' => 'Trip Report', 'href' => '#day-trip-report' ];
+    if ( $gear_notes )      $nav_items[] = [ 'icon' => 'backpack', 'label' => 'Gear', 'href' => '#day-trip-gear' ];
+    if ( $resource_links )  $nav_items[] = [ 'icon' => 'link', 'label' => 'Resources & Links', 'href' => '#day-trip-resources' ];
+    if ( $related_reports ) $nav_items[] = [ 'icon' => 'bookmark', 'label' => 'Related Trip Reports', 'href' => '#day-trip-related' ];
+    if ( $photo_gallery )   $nav_items[] = [ 'icon' => 'image', 'label' => 'Photo Gallery', 'href' => '#day-trip-gallery' ];
+
+    ?>
+
+    <div class="trip-report-layout">
+
+    <aside class="trip-report-sidebar">
+      <?php
+      get_template_part( 'template-parts/trail/trip-nav', null, [
+        'items' => $nav_items,
+      ] );
+      ?>
+    </aside>
+
+    <div class="trip-report-main">
 
     <?php if ( $map_url ) : ?>
       <?php $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) ); ?>
       <div class="trail-section trail-map" id="day-trip-map">
-        <h2 class="trail-section-title">Map</h2>
+        <h2 class="trail-section-title">Route Map</h2>
         <div class="trail-section-content trail-map-embed">
           <?php
           if ( $map_description ) {
@@ -180,11 +191,16 @@ $hero = $normalize_image( $hero_image );
 
     <?php if ( $trip_overview ) : ?>
       <div class="trail-section" id="day-trip-report">
-        <h2 class="trail-section-title">Trip Report</h2>
+        <div class="trail-section-header">
+          <h2 class="trail-section-title">Trip Report</h2>
+          <?php echo $meta_bar_html; ?>
+        </div>
         <div class="trail-section-content">
           <?php echo wp_kses_post( $trip_overview ); ?>
         </div>
       </div>
+    <?php elseif ( $meta_bar_html ) : ?>
+      <?php echo $meta_bar_html; ?>
     <?php endif; ?>
 
     <?php
@@ -240,6 +256,10 @@ $hero = $normalize_image( $hero_image );
         <?php $render_gallery( $photo_gallery, 'day-trip-gallery' ); ?>
       </div>
     <?php endif; ?>
+
+    </div><!-- .trip-report-main -->
+
+    </div><!-- .trip-report-layout -->
 
   </div><!-- .trail-content-wrap -->
 

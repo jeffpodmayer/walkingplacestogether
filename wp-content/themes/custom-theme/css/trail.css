@@ -35,7 +35,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
 
@@ -47,6 +47,39 @@
   display: block;
 }
 
+h1.entry-title.trip-report-title {
+  margin: 1.25rem 0 0;
+  line-height: 1.15;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed var(--color-green);
+}
+
+/* Visible section starts flush with the sidebar box (tabbed layout) */
+.trip-report-main > .trail-section {
+  /* No auto side margins: as flex items they'd shrink-to-fit instead of
+     stretching to the full column width */
+  margin: 0 0 1.5rem;
+  width: 100%;
+}
+
+.trip-report-main > .trail-section > .trail-section-title,
+.trip-report-main > .trail-section > .trail-section-header .trail-section-title {
+  margin-top: 0;
+}
+
+.trip-report-main .trip-day {
+  margin-top: 0;
+}
+
+/* Days stack as one continuous story inside their tab */
+.trip-report-main .trip-day + .trip-day {
+  margin-top: 3rem;
+}
+
+.trip-report-main .trip-day .trip-day-title {
+  margin-top: 0;
+}
+
 /* =========================================================
    Day by Day Section
    ========================================================= */
@@ -56,8 +89,6 @@
 
 h2.trip-day-title {
   font-size: 1.75rem !important;
-  border-bottom: 1px dashed var(--color-green);
-  padding-bottom: 0.1rem;
   margin-bottom: 0.75rem;
   line-height: 1.3;
   overflow-wrap: anywhere;
@@ -193,6 +224,422 @@ h2.trip-day-title {
 /* =========================================================
      3) Trail Details Cards
      ========================================================= */
+/* Trip report meta bar (miles / days / dates) */
+.trip-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  width: 100%;
+  margin: 0.5rem 0 1rem;
+}
+
+/* Section header row: heading with meta bar beside it */
+.trail-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1.75rem;
+}
+
+.trail-section-header .trail-section-title {
+  margin-bottom: 0.5rem;
+}
+
+.trail-section-header .trip-meta-bar {
+  width: auto;
+  margin: 0;
+}
+
+.trail-section-header .trip-meta-item {
+  font-size: 0.92rem;
+  gap: 0.45rem;
+}
+
+.trail-section-header .trip-meta-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.trip-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-green);
+  font-size: 1.05rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.trip-meta-item + .trip-meta-item {
+  border-left: 1px solid #ddd;
+  padding-left: 1.25rem;
+}
+
+.trip-meta-icon {
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .trip-meta-bar {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .trip-meta-item + .trip-meta-item {
+    border-left: none;
+    padding-left: 0;
+  }
+}
+
+/* Floating route map */
+.trip-map-popout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-left: 0.6rem;
+  padding: 0.3rem;
+  background: none;
+  border: none;
+  border-radius: calc(var(--radius) * 0.75);
+  color: var(--color-green);
+  cursor: pointer;
+}
+
+.trip-map-popout:hover {
+  background: #ecece7;
+}
+
+.trip-map-popout svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Rounded corners on the docked map */
+.trail-map-embed iframe {
+  border-radius: var(--radius);
+}
+
+.trip-map-float {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  width: min(440px, calc(100vw - 2rem));
+  height: 360px;
+  min-width: 280px;
+  min-height: 220px;
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  resize: both;
+}
+
+.trip-map-float-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.75rem;
+  background: var(--color-green);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.trip-map-float-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.trip-map-float .trail-map-embed {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+}
+
+/* In the floating panel, show only the map itself */
+.trip-map-float .trail-map-embed > :not(iframe) {
+  display: none;
+}
+
+.trip-map-float .trail-map-embed iframe {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border-radius: 0;
+}
+
+/* Tabbed sections: beat display:!important rules (e.g. galleries) when hidden */
+.trip-report-main [hidden] {
+  display: none !important;
+}
+
+/* Two-column layout: quick links sidebar + main content */
+.single-trail .trail-content-wrap:has(.trip-report-layout) {
+  max-width: 1240px;
+}
+
+.trip-report-layout {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  gap: 2.5rem;
+  align-items: start;
+  margin-top: 1.75rem;
+  margin-bottom: 3rem;
+}
+
+.trip-report-sidebar {
+  position: sticky;
+  top: 3.5rem;
+}
+
+
+.trip-report-sidebar .trail-quick-links-section {
+  margin: 0;
+}
+
+/* Sidebar navigation panel */
+.trip-nav {
+  background: #f6f6f3;
+  border: 1px solid #ececea;
+  border-radius: var(--radius);
+  padding: 1.5rem 1.25rem;
+}
+
+.trip-nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.trip-nav-item + .trip-nav-item {
+  border-top: 1px solid #e4e4e0;
+}
+
+.trip-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.trip-nav-item a {
+  flex: 1;
+  min-width: 0;
+}
+
+.trip-nav-map-float {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0.35rem;
+  border-radius: calc(var(--radius) * 0.75);
+  color: var(--color-green);
+  cursor: pointer;
+}
+
+.trip-nav-map-float:hover {
+  background: #ecece7;
+}
+
+.trip-nav-map-float svg {
+  width: 18px;
+  height: 18px;
+}
+
+.trip-nav-item a {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  padding: 0.7rem 0.6rem;
+  border-radius: calc(var(--radius) * 0.75);
+  text-decoration: none;
+  color: var(--color-green);
+}
+
+.trip-nav-item a:hover {
+  background: #ecece7;
+}
+
+.trip-nav-bullet {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid var(--color-green);
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.trip-nav-bullet .trip-meta-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.trip-nav-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  padding-top: 0.3rem;
+}
+
+.trip-nav-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.trip-nav-sub {
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: #5c6157;
+}
+
+/* Day entries: dot bullets joined by a dashed timeline */
+.trip-nav-item--dot {
+  position: relative;
+}
+
+.trip-nav-item--dot + .trip-nav-item--dot {
+  border-top: none;
+}
+
+/* Dashed rail running through the dot column */
+.trip-nav-item--dot::before {
+  content: "";
+  position: absolute;
+  left: calc(0.6rem + 14px);
+  top: 0;
+  bottom: 0;
+  border-left: 2px dashed #b7c0ab;
+}
+
+/* The rail starts at the first dot and ends at the last one */
+.trip-nav-item:not(.trip-nav-item--dot) + .trip-nav-item--dot::before {
+  top: 26px;
+}
+
+.trip-nav-item--dot:not(:has(+ .trip-nav-item--dot))::before {
+  top: 0;
+  bottom: auto;
+  height: 26px;
+}
+
+.trip-nav-item:not(.trip-nav-item--dot)
+  + .trip-nav-item--dot:not(:has(+ .trip-nav-item--dot))::before {
+  display: none;
+}
+
+.trip-nav-item--dot a {
+  position: relative;
+}
+
+.trip-nav-bullet--dot {
+  border: none;
+  border-radius: 50%;
+  background: #f6f6f3;
+}
+
+.trip-nav-bullet--dot::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-green);
+}
+
+.trip-nav-item a:hover .trip-nav-bullet--dot {
+  background: #ecece7;
+}
+
+/* Active section */
+.trip-nav-item a.is-active {
+  background: var(--color-green);
+  color: #fff;
+}
+
+.trip-nav-item a.is-active .trip-nav-bullet--dot {
+  background: var(--color-green);
+  border: none;
+}
+
+.trip-nav-item a.is-active .trip-nav-bullet--dot::before {
+  background: #fff;
+}
+
+/* Rail segment turns white inside the selected day's pill, inset so it
+   doesn't pierce the rounded corners */
+.trip-nav-item--dot:has(a.is-active)::before {
+  border-color: rgba(255, 255, 255, 0.75);
+  z-index: 1;
+  top: 8px;
+  bottom: 8px;
+}
+
+/* Selected last day of the run: rail still ends at its dot */
+.trip-nav-item--dot:has(a.is-active):not(:has(+ .trip-nav-item--dot))::before {
+  top: 8px;
+  bottom: auto;
+  height: 18px;
+}
+
+.trip-nav-item a.is-active .trip-nav-sub {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.trip-nav-item a.is-active .trip-nav-bullet:not(.trip-nav-bullet--dot) {
+  background: #fff;
+  border-color: #fff;
+  color: var(--color-green);
+}
+
+/* Clicks keep focus on the link (navigation is prevented); only show a ring
+   for keyboard focus */
+.trip-nav-item a:focus {
+  outline: none;
+}
+
+.trip-nav-item a:focus-visible {
+  outline: 2px solid var(--color-green);
+  outline-offset: 2px;
+}
+
+.trip-nav-item:has(a.is-active),
+.trip-nav-item:has(a.is-active) + .trip-nav-item {
+  border-top-color: transparent;
+}
+
+@media (max-width: 900px) {
+  .trip-report-layout {
+    display: block;
+  }
+
+  .trip-report-sidebar {
+    position: static;
+    margin-bottom: 1.5rem;
+  }
+}
+
 .trail-details-container {
   display: flex;
   flex-direction: row;

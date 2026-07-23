@@ -116,74 +116,85 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
 
   <div class="trail-content-wrap">
 
-    <div class="trail-title-row">
-      <h1 class="entry-title"><?php the_title(); ?></h1>
-    </div>
+    <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
 
     <?php
-    // ── Detail cards ─────────────────────────────────────────────
-    if ( $distance || $trip_duration || $start_date || $end_date ) :
-      echo '<div class="trail-details-container">';
+    // ── Meta bar (miles / days / dates), rendered below the Trip Overview heading
+    $meta_bar_html = '';
+    if ( $distance || $trip_duration || $start_date || $end_date ) {
+      $meta_bar_html .= '<div class="trip-meta-bar">';
 
       if ( $distance ) {
-        echo '<div class="trail-detail-card">';
-        echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $distance ) . '">' . esc_html( $distance ) . '</span>';
-        echo '<span class="trail-detail-label">Miles</span>';
-        echo '</div>';
+        $meta_bar_html .= '<div class="trip-meta-item">'
+          . custom_theme_trip_meta_icon( 'route' )
+          . '<span>' . esc_html( custom_theme_format_distance( $distance ) ) . ' miles</span>'
+          . '</div>';
       }
 
       if ( $trip_duration ) {
-        echo '<div class="trail-detail-card">';
-        echo '<span class="trail-detail-value js-count" data-count="' . esc_attr( $trip_duration ) . '">' . esc_html( $trip_duration ) . '</span>';
-        echo '<span class="trail-detail-label">Days</span>';
-        echo '</div>';
+        $meta_bar_html .= '<div class="trip-meta-item">'
+          . custom_theme_trip_meta_icon( 'sun' )
+          . '<span>' . esc_html( custom_theme_format_days( $trip_duration ) ) . '</span>'
+          . '</div>';
       }
 
       if ( $start_date || $end_date ) {
         $start = $start_date ? date_i18n( 'M j, Y', strtotime( $start_date ) ) : '';
         $end   = $end_date   ? date_i18n( 'M j, Y', strtotime( $end_date ) )   : '';
-        echo '<div class="trail-detail-card trail-detail-card--secondary">';
-        echo '<span class="trail-detail-value">'
-          . esc_html( $start )
-          . '<br><span class="trail-date-arrow">↓</span><br>'
-          . esc_html( $end )
-          . '</span>';
-        echo '</div>';
+        $range = ( $start && $end && $start !== $end ) ? $start . ' – ' . $end : ( $start ?: $end );
+        $meta_bar_html .= '<div class="trip-meta-item">'
+          . custom_theme_trip_meta_icon( 'calendar' )
+          . '<span>' . esc_html( $range ) . '</span>'
+          . '</div>';
       }
 
-      echo '</div>';
-    endif;
+      $meta_bar_html .= '</div>';
+    }
     ?>
 
     <?php
-    // ── Quick links ──────────────────────────────────────────────
-    $quick_links = [];
-    if ( $trip_overview )  $quick_links['Trip Overview']    = '#trip-overview';
-    if ( $map_url )        $quick_links['Map']              = '#trip-map';
+    // ── Sidebar navigation ───────────────────────────────────────
+    $nav_items = [];
+    if ( $trip_overview ) $nav_items[] = [ 'icon' => 'compass', 'label' => 'Trip Overview', 'href' => '#trip-overview' ];
+    if ( $map_url )       $nav_items[] = [ 'icon' => 'map', 'label' => 'Route Map', 'href' => '#trip-map' ];
     foreach ( $days as $num => $day ) {
-      $label = 'Day ' . $num;
-      if ( ! empty( $day['title'] ) ) {
-        $label .= ' – ' . $day['title'];
-      }
-      $quick_links[ $label ] = '#trip-day-' . $num;
+      $nav_items[] = [
+        'label' => 'Day ' . $num,
+        'sub'   => $day['title'] ?: '',
+        'href'  => '#trip-day-' . $num,
+      ];
     }
-    if ( $gear_notes )     $quick_links['Gear Notes']       = '#trip-gear';
-    if ( $resource_links ) $quick_links['Resources & Links'] = '#trip-resources';
-    if ( $photo_gallery )  $quick_links['Photo Gallery']    = '#trip-gallery';
-    if ( $related_reports ) $quick_links['Related Trip Reports'] = '#trip-related';
+    if ( $gear_notes )      $nav_items[] = [ 'icon' => 'backpack', 'label' => 'Gear Notes', 'href' => '#trip-gear' ];
+    if ( $resource_links )  $nav_items[] = [ 'icon' => 'link', 'label' => 'Resources & Links', 'href' => '#trip-resources' ];
+    if ( $photo_gallery )   $nav_items[] = [ 'icon' => 'image', 'label' => 'Photo Gallery', 'href' => '#trip-gallery' ];
+    if ( $related_reports ) $nav_items[] = [ 'icon' => 'bookmark', 'label' => 'Related Trip Reports', 'href' => '#trip-related' ];
 
-    get_template_part( 'template-parts/trail/quick-links', null, [
-      'links' => $quick_links,
-    ] );
     ?>
+
+    <div class="trip-report-layout">
+
+    <aside class="trip-report-sidebar">
+      <?php
+      get_template_part( 'template-parts/trail/trip-nav', null, [
+        'items' => $nav_items,
+      ] );
+      ?>
+    </aside>
+
+    <div class="trip-report-main">
 
     <?php
     // ── Trip overview ────────────────────────────────────────────
-    get_template_part( 'template-parts/trail/section', null, [
-      'id'      => 'trip-overview',
-      'title'   => 'Trip Overview',
-      'content' => $trip_overview,
-    ] );
+    if ( $trip_overview ) {
+      get_template_part( 'template-parts/trail/section', null, [
+        'id'             => 'trip-overview',
+        'title'          => 'Trip Overview',
+        'before_content' => $meta_bar_html,
+        'content'        => $trip_overview,
+      ] );
+    } elseif ( $meta_bar_html ) {
+      echo $meta_bar_html;
+    }
     ?>
 
     <?php
@@ -191,7 +202,7 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
     if ( $map_url ) :
       $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) );
       echo '<div class="trail-section trail-map" id="trip-map">';
-      echo '<h2 class="trail-section-title">Map</h2>';
+      echo '<h2 class="trail-section-title">Route Map</h2>';
       echo '<div class="trail-section-content trail-map-embed">';
       if ( $map_description ) {
         echo wp_kses_post( $map_description );
@@ -301,6 +312,10 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
         <button class="trail-gallery-toggle" type="button">Show all photos</button>
       </div>
     <?php endif; ?>
+
+    </div><!-- .trip-report-main -->
+
+    </div><!-- .trip-report-layout -->
 
   </div><!-- .trail-content-wrap -->
 

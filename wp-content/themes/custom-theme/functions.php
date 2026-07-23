@@ -85,6 +85,35 @@ function custom_theme_format_days( $days ) {
   return $days === 1 ? '1 day' : $days . ' days';
 }
 
+// Inline SVG icons for the trip report meta bar (route / sun / calendar).
+function custom_theme_trip_meta_icon( $name ) {
+  $attrs = 'class="trip-meta-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"';
+
+  switch ( $name ) {
+    case 'route':
+      return '<svg ' . $attrs . '><circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/></svg>';
+    case 'sun':
+      return '<svg ' . $attrs . '><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
+    case 'calendar':
+      return '<svg ' . $attrs . '><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
+    case 'compass':
+      return '<svg ' . $attrs . '><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
+    case 'map':
+      return '<svg ' . $attrs . '><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>';
+    case 'backpack':
+      return '<svg ' . $attrs . '><path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/><path d="M8 10h8"/></svg>';
+    case 'link':
+      return '<svg ' . $attrs . '><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+    case 'image':
+      return '<svg ' . $attrs . '><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>';
+    case 'bookmark':
+      return '<svg ' . $attrs . '><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
+    case 'footprints':
+      return '<svg ' . $attrs . '><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg>';
+  }
+  return '';
+}
+
 // Enqueue Google Fonts, parent/child styles, and global stylesheet
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
 
@@ -143,7 +172,7 @@ function custom_theme_enqueue_trail_styles() {
     'custom-theme-trail',
     get_stylesheet_directory_uri() . '/css/trail.css',
     array( 'custom-theme-child-style' ),
-    wp_get_theme()->get( 'Version' )
+    filemtime( get_stylesheet_directory() . '/css/trail.css' )
   );
 }
 
@@ -181,7 +210,7 @@ add_action( 'wp_enqueue_scripts', function() {
     'trail',
     get_stylesheet_directory_uri() . '/js/trail.js',
     array( 'glightbox' ),
-    wp_get_theme()->get( 'Version' ),
+    filemtime( get_stylesheet_directory() . '/js/trail.js' ),
     true
   );
   wp_oembed_add_provider(
