@@ -49,13 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // The tab panel for a day link is the whole day-by-day wrapper.
   const panelFor = (t) =>
-    t.el.classList.contains("trip-day")
-      ? t.el.closest(".trail-section")
-      : t.el;
+    t.el.classList.contains("trip-day") ? t.el.closest(".trail-section") : t.el;
 
-  const dayTargets = targets.filter((t) =>
-    t.el.classList.contains("trip-day")
-  );
+  const dayTargets = targets.filter((t) => t.el.classList.contains("trip-day"));
   const daysPanel = dayTargets.length ? panelFor(dayTargets[0]) : null;
 
   // A panel includes any following siblings that belong to it
@@ -71,8 +67,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const stickyOffset = () => {
-    const sidebar = document.querySelector(".trip-report-sidebar");
-    return sidebar ? parseFloat(getComputedStyle(sidebar).top) || 0 : 0;
+    const nav = document.querySelector(".trip-nav");
+    return nav ? parseFloat(getComputedStyle(nav).top) || 0 : 0;
   };
 
   const scrollToLayoutTop = () => {
@@ -151,8 +147,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("scroll", updateSpy, { passive: true });
 
   const initial =
-    (location.hash &&
-      targets.find((t) => "#" + t.el.id === location.hash)) ||
+    (location.hash && targets.find((t) => "#" + t.el.id === location.hash)) ||
     targets[0];
   showPanel(panelFor(initial));
   setActiveLink(initial.link);
@@ -240,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Float/dock toggle on the Route Map row in the sidebar nav
   const navLink = document.querySelector(
-    '.trip-nav-item a[href="#' + section.id + '"]'
+    '.trip-nav-item a[href="#' + section.id + '"]',
   );
   if (navLink) {
     const navBtn = document.createElement("button");

@@ -116,8 +116,6 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
 
   <div class="trail-content-wrap">
 
-    <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
-
     <?php
     // ── Meta bar (miles / days / dates), rendered below the Trip Overview heading
     $meta_bar_html = '';
@@ -172,6 +170,11 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
     ?>
 
     <div class="trip-report-layout">
+
+    <header class="trip-report-heading">
+      <p class="trip-report-eyebrow">Trip Report</p>
+      <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
+    </header>
 
     <aside class="trip-report-sidebar">
       <?php
@@ -238,12 +241,18 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
 
     <?php
     // ── Gear notes ───────────────────────────────────────────────
+    $gear_gallery_html = '';
+    if ( $gear_photos ) {
+      ob_start();
+      $render_gallery( $gear_photos, 'trip-gear-gallery' );
+      $gear_gallery_html = ob_get_clean();
+    }
     get_template_part( 'template-parts/trail/section', null, [
-      'id'      => 'trip-gear',
-      'title'   => 'Gear Notes',
-      'content' => $gear_notes,
+      'id'            => 'trip-gear',
+      'title'         => 'Gear Notes',
+      'content'       => $gear_notes,
+      'after_content' => $gear_gallery_html,
     ] );
-    $render_gallery( $gear_photos, 'trip-gear-gallery' );
     ?>
 
     <?php

@@ -48,22 +48,61 @@
 }
 
 h1.entry-title.trip-report-title {
-  margin: 1.25rem 0 0;
-  line-height: 1.15;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px dashed var(--color-green);
+  margin: 0;
+  padding: 0;
+  border: none;
+  /* Keep above section/day titles (1.5rem) at every viewport */
+  font-size: clamp(1.85rem, 2.2vw, 2.25rem) !important;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.trip-report-heading {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0 0 0.85rem;
+}
+
+.trip-report-eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7265;
 }
 
 /* Visible section starts flush with the sidebar box (tabbed layout) */
 .trip-report-main > .trail-section {
   /* No auto side margins: as flex items they'd shrink-to-fit instead of
      stretching to the full column width */
-  margin: 0 0 1.5rem;
+  margin: 0;
   width: 100%;
+  box-sizing: border-box;
+  background: #fff;
+  border: 1px solid #ececea;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
+  padding: 1.75rem 2rem 2rem;
+}
+
+/* Galleries nested inside a section (e.g. gear photos) sit in the same card */
+.trip-report-main > .trail-section .trail-image-gallery {
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .trip-report-main > .trail-section {
+    padding: 1.25rem 1rem 1.5rem;
+  }
 }
 
 .trip-report-main > .trail-section > .trail-section-title,
-.trip-report-main > .trail-section > .trail-section-header .trail-section-title {
+.trip-report-main
+  > .trail-section
+  > .trail-section-header
+  .trail-section-title {
   margin-top: 0;
 }
 
@@ -88,18 +127,15 @@ h1.entry-title.trip-report-title {
 }
 
 h2.trip-day-title {
-  font-size: 1.75rem !important;
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
+  font-size: 1.5rem !important;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
   overflow-wrap: anywhere;
 }
 
-.trip-day-number {
-  font-weight: 500;
-}
-
+.trip-day-number,
 .trip-day-name {
-  font-weight: 500;
+  font-weight: inherit;
 }
 
 /* =========================================================
@@ -128,7 +164,7 @@ h2.trip-day-title {
 }
 
 .trail-section-title {
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   margin-bottom: 0.5rem;
 }
 
@@ -395,17 +431,26 @@ h2.trip-day-title {
 .trip-report-layout {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
-  gap: 2.5rem;
+  grid-template-rows: auto auto;
+  column-gap: 1.25rem;
+  row-gap: 0;
   align-items: start;
-  margin-top: 1.75rem;
+  margin-top: 2rem;
   margin-bottom: 3rem;
 }
 
 .trip-report-sidebar {
+  grid-column: 1;
+  grid-row: 1 / -1;
   position: sticky;
   top: 3.5rem;
 }
 
+.trip-report-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+}
 
 .trip-report-sidebar .trail-quick-links-section {
   margin: 0;
@@ -632,6 +677,10 @@ h2.trip-day-title {
 @media (max-width: 900px) {
   .trip-report-layout {
     display: block;
+  }
+
+  .trip-report-heading {
+    margin-bottom: 1.25rem;
   }
 
   .trip-report-sidebar {
@@ -1115,8 +1164,8 @@ h2.trip-day-title {
 
   .single-trail .trail-section .trail-section-title,
   h2.trip-day-title {
-    font-size: clamp(1.5rem, 4vw, 2rem) !important;
-    line-height: 1.2;
+    font-size: 1.5rem !important;
+    line-height: 1.25;
     overflow-wrap: anywhere;
   }
 }

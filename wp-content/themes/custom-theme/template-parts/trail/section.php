@@ -1,9 +1,9 @@
 <?php
 /**
  * Section template part
- * Args: id, title, content, before_content (optional, pre-built HTML)
+ * Args: id, title, content, before_content (optional), after_content (optional)
  */
-if ( empty( $args['content'] ) ) {
+if ( empty( $args['content'] ) && empty( $args['after_content'] ) ) {
   return;
 }
 $id = $args['id'] ?? '';
@@ -18,7 +18,10 @@ $title = $args['title'] ?? '';
   <?php else : ?>
     <h2 class="trail-section-title"><?php echo esc_html( $title ); ?></h2>
   <?php endif; ?>
-  <div class="trail-section-content">
-    <?php echo wp_kses_post( $args['content'] ); ?>
-  </div>
+  <?php if ( ! empty( $args['content'] ) ) : ?>
+    <div class="trail-section-content">
+      <?php echo wp_kses_post( $args['content'] ); ?>
+    </div>
+  <?php endif; ?>
+  <?php if ( ! empty( $args['after_content'] ) ) { echo $args['after_content']; } ?>
 </div>

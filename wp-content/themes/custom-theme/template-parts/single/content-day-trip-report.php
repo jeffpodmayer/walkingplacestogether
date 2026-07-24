@@ -128,8 +128,6 @@ $hero = $normalize_image( $hero_image );
 
   <div class="trail-content-wrap">
 
-    <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
-
     <?php
     // Meta bar (miles / date), rendered below the Trip Report heading
     $meta_bar_html = '';
@@ -163,6 +161,11 @@ $hero = $normalize_image( $hero_image );
     ?>
 
     <div class="trip-report-layout">
+
+    <header class="trip-report-heading">
+      <p class="trip-report-eyebrow">Day Trip</p>
+      <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
+    </header>
 
     <aside class="trip-report-sidebar">
       <?php
