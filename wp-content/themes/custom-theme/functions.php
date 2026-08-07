@@ -72,8 +72,53 @@ function custom_theme_format_trail_date_range( $start_date, $end_date = '' ) {
   return $start->format( 'F Y' ) . ' - ' . $end->format( 'F Y' );
 }
 
-function custom_theme_format_distance( $distance ) {
+/**
+ * Compact day-level trip date range for the overview meta bar.
+ * Same month/year: May 23 – 25, 2026
+ * Same year:       May 23 – Jun 2, 2026
+ * Otherwise:       Dec 28, 2025 – Jan 3, 2026
+ */
+function custom_theme_format_trip_date_range( $start_date, $end_date = '' ) {
+  $start = custom_theme_parse_acf_date( $start_date );
+  $end   = custom_theme_parse_acf_date( $end_date );
+
+  if ( ! $start && ! $end ) {
+    return '';
+  }
+
+  if ( ! $start ) {
+    return date_i18n( 'M j, Y', $end->getTimestamp() );
+  }
+
+  if ( ! $end || $start->format( 'Ymd' ) === $end->format( 'Ymd' ) ) {
+    return date_i18n( 'M j, Y', $start->getTimestamp() );
+  }
+
+  $same_year  = $start->format( 'Y' ) === $end->format( 'Y' );
+  $same_month = $same_year && $start->format( 'm' ) === $end->format( 'm' );
+
+  if ( $same_month ) {
+    return date_i18n( 'M j', $start->getTimestamp() ) . ' – ' . date_i18n( 'j, Y', $end->getTimestamp() );
+  }
+
+  if ( $same_year ) {
+    return date_i18n( 'M j', $start->getTimestamp() ) . ' – ' . date_i18n( 'M j, Y', $end->getTimestamp() );
+  }
+
+  return date_i18n( 'M j, Y', $start->getTimestamp() ) . ' – ' . date_i18n( 'M j, Y', $end->getTimestamp() );
+}
+
+function custom_theme_format_distance( $distance, $decimals = null ) {
   $distance = (float) $distance;
+
+  if ( $decimals !== null ) {
+    $decimals = (int) $decimals;
+    if ( $decimals <= 0 ) {
+      return (string) (int) round( $distance );
+    }
+    return number_format( $distance, $decimals );
+  }
+
   if ( $distance == (int) $distance ) {
     return (string) (int) $distance;
   }
@@ -83,6 +128,14 @@ function custom_theme_format_distance( $distance ) {
 function custom_theme_format_days( $days ) {
   $days = (int) $days;
   return $days === 1 ? '1 day' : $days . ' days';
+}
+
+function custom_theme_format_elevation( $feet ) {
+  $feet = (float) $feet;
+  if ( $feet == (int) $feet ) {
+    return number_format( (int) $feet );
+  }
+  return number_format( $feet, 1 );
 }
 
 // Inline SVG icons for the trip report meta bar (route / sun / calendar).
@@ -96,6 +149,14 @@ function custom_theme_trip_meta_icon( $name ) {
       return '<svg ' . $attrs . '><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>';
     case 'calendar':
       return '<svg ' . $attrs . '><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>';
+    case 'trending-up':
+      return '<svg ' . $attrs . '><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>';
+    case 'trending-down':
+      return '<svg ' . $attrs . '><polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/></svg>';
+    case 'tent':
+      return '<svg ' . $attrs . '><path d="M3.5 21 14 3"/><path d="M20.5 21 10 3"/><path d="M15.5 21 12 15l-3.5 6"/><path d="M2 21h20"/></svg>';
+    case 'mountain':
+      return '<svg ' . $attrs . '><path d="m8 3 4 8 5-5 5 15H2L8 3z"/></svg>';
     case 'compass':
       return '<svg ' . $attrs . '><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>';
     case 'map':
@@ -113,6 +174,9 @@ function custom_theme_trip_meta_icon( $name ) {
   }
   return '';
 }
+
+// Disable Astra's Scroll to Top (conflicts with map preview control).
+add_filter( 'astra_get_option_scroll-to-top-enable', '__return_false' );
 
 // Enqueue Google Fonts, parent/child styles, and global stylesheet
 add_action( 'wp_enqueue_scripts', 'custom_theme_enqueue_styles', 15 );
@@ -135,11 +199,12 @@ function custom_theme_enqueue_styles() {
         array( 'custom-theme-parent-style' ),
         wp_get_theme()->get( 'Version' )
     );
+    $global_css = get_stylesheet_directory() . '/css/global.css';
     wp_enqueue_style(
         'custom-theme-global',
         get_stylesheet_directory_uri() . '/css/global.css',
         array( 'custom-theme-child-style' ),
-        wp_get_theme()->get( 'Version' )
+        file_exists( $global_css ) ? (string) filemtime( $global_css ) : wp_get_theme()->get( 'Version' )
     );
 }
 

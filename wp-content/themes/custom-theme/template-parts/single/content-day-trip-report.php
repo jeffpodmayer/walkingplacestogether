@@ -72,28 +72,25 @@ $normalize_image = function( $image ) {
 };
 
 // ── Helper: render an ACF gallery ───────────────────────────────
-$render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image ) {
+$render_gallery = function( $images, $extra_class = '', $collapsible = false ) use ( $normalize_image ) {
   if ( ! $images || ! is_array( $images ) ) {
     return;
   }
 
-  $count = count( $images );
-  if ( $count === 1 ) {
-    $layout = 'trail-gallery--1';
-  } elseif ( $count === 2 || $count === 4 ) {
-    $layout = 'trail-gallery--2';
-  } else {
-    $layout = 'trail-gallery--3';
-  }
-
-  echo '<div class="trail-image-gallery ' . esc_attr( trim( $layout . ' ' . $extra_class ) ) . '">';
+  $normalized = [];
   foreach ( $images as $raw ) {
     $image = $normalize_image( $raw );
-    if ( ! $image ) {
-      continue;
+    if ( $image ) {
+      $normalized[] = $image;
     }
+  }
+  $count = count( $normalized );
+  if ( ! $count ) {
+    return;
+  }
 
-    echo '<figure class="trail-gallery-item">';
+  $render_figure = function( $image, $item_class ) {
+    echo '<figure class="' . esc_attr( $item_class ) . '">';
     echo '<a href="' . esc_url( $image['url'] ) . '" class="trail-lightbox" data-title="' . esc_attr( $image['caption'] ) . '">';
     if ( $image['id'] ) {
       echo wp_get_attachment_image( $image['id'], 'large', false, [ 'loading' => 'lazy' ] );
@@ -105,6 +102,29 @@ $render_gallery = function( $images, $extra_class = '' ) use ( $normalize_image 
       echo '<figcaption class="trail-gallery-caption">' . esc_html( $image['caption'] ) . '</figcaption>';
     }
     echo '</figure>';
+  };
+
+  // Same 3×3 collapse pattern as multi-day / trail galleries.
+  if ( $collapsible && $count > 9 ) {
+    echo '<div class="trail-gallery-grid ' . esc_attr( $extra_class ) . '" data-collapsed="true">';
+    foreach ( $normalized as $image ) {
+      $render_figure( $image, 'trail-gallery-grid-item' );
+    }
+    echo '</div>';
+    echo '<button class="trail-gallery-toggle trail-gallery-toggle--bar" type="button" data-more="Show more photos" data-fewer="Show fewer photos">Show more photos</button>';
+    return;
+  }
+
+  if ( $count === 1 ) {
+    $layout = 'trail-gallery--1';
+  } elseif ( $count === 2 || $count === 4 ) {
+    $layout = 'trail-gallery--2';
+  } else {
+    $layout = 'trail-gallery--3';
+  }
+  echo '<div class="trail-image-gallery ' . esc_attr( trim( $layout . ' ' . $extra_class ) ) . '">';
+  foreach ( $normalized as $image ) {
+    $render_figure( $image, 'trail-gallery-item' );
   }
   echo '</div>';
 };
@@ -151,8 +171,7 @@ $hero = $normalize_image( $hero_image );
 
     <?php
     $nav_items = [];
-    if ( $map_url )         $nav_items[] = [ 'icon' => 'map', 'label' => 'Route Map', 'href' => '#day-trip-map' ];
-    if ( $trip_overview )   $nav_items[] = [ 'icon' => 'compass', 'label' => 'Trip Report', 'href' => '#day-trip-report' ];
+    if ( $trip_overview || $map_url ) $nav_items[] = [ 'icon' => 'compass', 'label' => 'Trip Report', 'href' => '#day-trip-report' ];
     if ( $gear_notes )      $nav_items[] = [ 'icon' => 'backpack', 'label' => 'Gear', 'href' => '#day-trip-gear' ];
     if ( $resource_links )  $nav_items[] = [ 'icon' => 'link', 'label' => 'Resources & Links', 'href' => '#day-trip-resources' ];
     if ( $related_reports ) $nav_items[] = [ 'icon' => 'bookmark', 'label' => 'Related Trip Reports', 'href' => '#day-trip-related' ];
@@ -162,11 +181,6 @@ $hero = $normalize_image( $hero_image );
 
     <div class="trip-report-layout">
 
-    <header class="trip-report-heading">
-      <p class="trip-report-eyebrow">Day Trip</p>
-      <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
-    </header>
-
     <aside class="trip-report-sidebar">
       <?php
       get_template_part( 'template-parts/trail/trip-nav', null, [
@@ -175,92 +189,115 @@ $hero = $normalize_image( $hero_image );
       ?>
     </aside>
 
+    <div class="trip-report-content">
+
+    <header class="trip-report-heading">
+      <p class="trip-report-eyebrow">Day Trip</p>
+      <h1 class="entry-title trip-report-title"><?php the_title(); ?></h1>
+    </header>
+
     <div class="trip-report-main">
 
-    <?php if ( $map_url ) : ?>
-      <?php $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) ); ?>
-      <div class="trail-section trail-map" id="day-trip-map">
-        <h2 class="trail-section-title">Route Map</h2>
-        <div class="trail-section-content trail-map-embed">
-          <?php
-          if ( $map_description ) {
-            echo wp_kses_post( $map_description );
-          }
-          ?>
-          <iframe src="<?php echo esc_url( $map_src ); ?>" style="border:none; width:100%; height:600px;" loading="lazy"></iframe>
+    <?php
+    $map_html = '';
+    if ( $map_url ) {
+      $map_src = add_query_arg( 'embed', 'True', esc_url_raw( $map_url ) );
+      ob_start();
+      ?>
+      <div class="trail-map-block">
+        <div class="trail-map-home">
+          <div class="trail-map-embed">
+            <iframe src="<?php echo esc_url( $map_src ); ?>" style="border:none; width:100%; height:600px;" loading="lazy" title="Route map"></iframe>
+          </div>
         </div>
       </div>
-    <?php endif; ?>
+      <?php
+      $map_html = ob_get_clean();
+    }
+    ?>
 
-    <?php if ( $trip_overview ) : ?>
-      <div class="trail-section" id="day-trip-report">
+    <div class="trail-section day-trip-story">
+
+    <?php if ( $trip_overview || $map_html ) : ?>
+      <div class="day-trip-block" id="day-trip-report">
         <div class="trail-section-header">
-          <h2 class="trail-section-title">Trip Report</h2>
+          <h2 class="trip-day-title">Trip Report</h2>
           <?php echo $meta_bar_html; ?>
         </div>
-        <div class="trail-section-content">
-          <?php echo wp_kses_post( $trip_overview ); ?>
-        </div>
+        <?php echo $map_html; ?>
+        <?php if ( $trip_overview ) : ?>
+          <div class="trail-section-content">
+            <?php echo wp_kses_post( $trip_overview ); ?>
+          </div>
+        <?php endif; ?>
       </div>
     <?php elseif ( $meta_bar_html ) : ?>
       <?php echo $meta_bar_html; ?>
     <?php endif; ?>
 
-    <?php
-    get_template_part( 'template-parts/trail/section', null, [
-      'id'      => 'day-trip-gear',
-      'title'   => 'Gear',
-      'content' => $gear_notes,
-    ] );
-    ?>
+    <?php if ( $gear_notes ) : ?>
+      <div class="day-trip-block" id="day-trip-gear">
+        <h2 class="trip-day-title">Gear</h2>
+        <div class="trail-section-content">
+          <?php echo wp_kses_post( $gear_notes ); ?>
+        </div>
+      </div>
+    <?php endif; ?>
 
-    <?php
-    get_template_part( 'template-parts/trail/section', null, [
-      'id'      => 'day-trip-resources',
-      'title'   => 'Resources & Links',
-      'content' => $resource_links,
-    ] );
-    ?>
+    <?php if ( $resource_links ) : ?>
+      <div class="day-trip-block" id="day-trip-resources">
+        <h2 class="trip-day-title">Resources &amp; Links</h2>
+        <div class="trail-section-content">
+          <?php echo wp_kses_post( $resource_links ); ?>
+        </div>
+      </div>
+    <?php endif; ?>
 
     <?php
     if ( $related_reports ) :
       if ( ! is_array( $related_reports ) ) {
         $related_reports = [ $related_reports ];
       }
-      echo '<div class="trail-section trail-related-posts" id="day-trip-related">';
-      echo '<h2 class="trail-section-title">Related Trip Reports</h2>';
-      echo '<div class="related-posts-grid">';
-      foreach ( $related_reports as $post_obj ) {
-        if ( ! $post_obj ) {
-          continue;
-        }
-        $post_id = $post_obj->ID;
-        $title   = get_the_title( $post_id );
-        $link    = get_permalink( $post_id );
-        $excerpt = get_the_excerpt( $post_id );
-        $thumb   = get_the_post_thumbnail( $post_id, 'medium', [ 'class' => 'related-post-thumb' ] );
-        echo '<div class="related-post-item">';
-        if ( $thumb ) {
-          echo '<a href="' . esc_url( $link ) . '" class="related-post-image">' . $thumb . '</a>';
-        }
-        echo '<h3 class="related-post-title"><a href="' . esc_url( $link ) . '">' . esc_html( $title ) . '</a></h3>';
-        if ( $excerpt ) {
-          echo '<p class="related-post-excerpt">' . esc_html( $excerpt ) . '</p>';
-        }
-        echo '</div>';
-      }
-      echo '</div></div>';
-    endif;
-    ?>
-
-    <?php if ( $photo_gallery && is_array( $photo_gallery ) ) : ?>
-      <div class="trail-section trail-photo-gallery" id="day-trip-gallery">
-        <h2 class="trail-section-title">Photo Gallery</h2>
-        <?php $render_gallery( $photo_gallery, 'day-trip-gallery' ); ?>
+      ?>
+      <div class="day-trip-block trail-related-posts" id="day-trip-related">
+        <h2 class="trip-day-title">Related Trip Reports</h2>
+        <div class="related-posts-grid">
+          <?php foreach ( $related_reports as $post_obj ) :
+            if ( ! $post_obj ) {
+              continue;
+            }
+            $post_id = $post_obj->ID;
+            $title   = get_the_title( $post_id );
+            $link    = get_permalink( $post_id );
+            $excerpt = get_the_excerpt( $post_id );
+            $thumb   = get_the_post_thumbnail( $post_id, 'medium', [ 'class' => 'related-post-thumb' ] );
+            ?>
+            <div class="related-post-item">
+              <?php if ( $thumb ) : ?>
+                <a href="<?php echo esc_url( $link ); ?>" class="related-post-image"><?php echo $thumb; ?></a>
+              <?php endif; ?>
+              <h3 class="related-post-title"><a href="<?php echo esc_url( $link ); ?>"><?php echo esc_html( $title ); ?></a></h3>
+              <?php if ( $excerpt ) : ?>
+                <p class="related-post-excerpt"><?php echo esc_html( $excerpt ); ?></p>
+              <?php endif; ?>
+            </div>
+          <?php endforeach; ?>
+        </div>
       </div>
     <?php endif; ?>
 
+    <?php if ( $photo_gallery && is_array( $photo_gallery ) ) : ?>
+      <div class="day-trip-block trail-photo-gallery" id="day-trip-gallery">
+        <h2 class="trip-day-title">Photo Gallery</h2>
+        <?php $render_gallery( $photo_gallery, 'day-trip-gallery', true ); ?>
+      </div>
+    <?php endif; ?>
+
+    </div><!-- .day-trip-story -->
+
     </div><!-- .trip-report-main -->
+
+    </div><!-- .trip-report-content -->
 
     </div><!-- .trip-report-layout -->
 

@@ -59,8 +59,6 @@ h1.entry-title.trip-report-title {
 }
 
 .trip-report-heading {
-  grid-column: 2;
-  grid-row: 1;
   margin: 0 0 0.85rem;
 }
 
@@ -79,12 +77,34 @@ h1.entry-title.trip-report-title {
      stretching to the full column width */
   margin: 0;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   background: #fff;
   border: 1px solid #ececea;
   border-radius: var(--radius);
   box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
   padding: 1.75rem 2rem 2rem;
+}
+
+/* Day trips: one continuous story card (like multi-day days stack) */
+.single-day-trip-report .day-trip-story {
+  margin: 0;
+}
+
+.single-day-trip-report .day-trip-block {
+  scroll-margin-top: calc(3.5rem + 0.5rem);
+}
+
+.single-day-trip-report .day-trip-block + .day-trip-block {
+  margin-top: 2rem;
+}
+
+.single-day-trip-report .day-trip-block > .trip-day-title {
+  margin-top: 0;
+}
+
+body.admin-bar .single-day-trip-report .day-trip-block {
+  scroll-margin-top: calc(3.5rem + 32px + 0.25rem);
 }
 
 /* Galleries nested inside a section (e.g. gear photos) sit in the same card */
@@ -112,11 +132,83 @@ h1.entry-title.trip-report-title {
 
 /* Days stack as one continuous story inside their tab */
 .trip-report-main .trip-day + .trip-day {
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
 
 .trip-report-main .trip-day .trip-day-title {
   margin-top: 0;
+}
+
+.trip-report-main .trip-day .trail-gallery-grid,
+.trip-report-main .trip-day .trail-image-gallery {
+  margin-top: 1.25rem;
+}
+
+/* End-of-overview bridge into Day 1 — page turn */
+.trip-continue {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid #e8e8e4;
+}
+
+.trip-continue-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.35rem 0 0.35rem 1rem;
+  border-left: 2px solid var(--color-green);
+  text-align: right;
+  color: var(--color-green) !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease;
+}
+
+.trip-continue-link:hover,
+.trip-continue-link:focus {
+  color: var(--color-green-dark) !important;
+}
+
+.trip-continue-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.1rem;
+}
+
+.trip-continue-kicker {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a8a84;
+}
+
+.trip-continue-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.trip-continue-arrow {
+  display: inline-block;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--color-green);
+  transition: transform 0.2s ease;
+}
+
+.trip-continue-link:hover .trip-continue-arrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trip-continue-link,
+  .trip-continue-arrow {
+    transition: none;
+  }
 }
 
 /* =========================================================
@@ -124,6 +216,11 @@ h1.entry-title.trip-report-title {
    ========================================================= */
 .trip-day {
   margin-top: 2rem;
+  scroll-margin-top: calc(3.5rem + 0.5rem);
+}
+
+body.admin-bar .trip-day {
+  scroll-margin-top: calc(3.5rem + 32px + 0.25rem);
 }
 
 h2.trip-day-title {
@@ -136,6 +233,144 @@ h2.trip-day-title {
 .trip-day-number,
 .trip-day-name {
   font-weight: inherit;
+}
+
+/* Day header: title (+ optional right-aligned date) above stats */
+.trip-day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.trip-day-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+.trip-day-header .trip-day-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.trip-day-date {
+  flex: 0 0 auto;
+  margin: 0.2rem 0 0;
+  padding-top: 0.15rem;
+  color: #6b7265;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.trip-day-header .trip-day-meta {
+  width: 100%;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .trip-day-title-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .trip-day-date {
+    margin-top: 0;
+    padding-top: 0;
+    text-align: left;
+  }
+}
+
+/* ── Day meta style A: match (default) ─────────────────────────
+   Sizing shared with Trip Overview via .trail-section-header /
+   .trip-day-header--match rules in the meta bar section below. */
+
+/* ── Day meta style B: muted ───────────────────────────────────
+   Quieter supporting line — smaller muted type, middot separators. */
+.trip-day-header--muted .trip-day-meta {
+  gap: 0.35rem 0.55rem;
+}
+
+.trip-day-header--muted .trip-meta-item {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  font-weight: 500;
+  gap: 0.35rem;
+}
+
+.trip-day-header--muted .trip-meta-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.75;
+}
+
+.trip-day-header--muted .trip-meta-item + .trip-meta-item {
+  border-left: none;
+  padding-left: 0;
+}
+
+.trip-day-header--muted .trip-meta-item + .trip-meta-item::before {
+  content: "·";
+  margin-right: 0.55rem;
+  color: var(--color-text-subtle);
+}
+
+/* ── Day meta style C: ruled ───────────────────────────────────
+   Title + stats as one block; a simple hairline under the whole header. */
+.trip-day-header--ruled {
+  gap: 0.4rem;
+  margin-bottom: 1.15rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid #e8e8e4;
+}
+
+.trip-day-header--ruled .trip-day-meta {
+  gap: 0.4rem 0.85rem;
+}
+
+.trip-day-header--ruled .trip-meta-item {
+  color: #6b7265;
+  font-size: 0.875rem;
+  font-weight: 500;
+  gap: 0.35rem;
+}
+
+.trip-day-header--ruled .trip-meta-icon {
+  width: 15px;
+  height: 15px;
+  opacity: 0.8;
+}
+
+.trip-day-header--ruled .trip-meta-item + .trip-meta-item {
+  border-left: none;
+  padding-left: 0;
+}
+
+.trip-day-header--ruled .trip-meta-item + .trip-meta-item::before {
+  content: "·";
+  margin-right: 0.85rem;
+  color: #b0b0a8;
+}
+
+@media (max-width: 700px) {
+  .trip-day-header--muted .trip-meta-item + .trip-meta-item::before {
+    display: none;
+  }
+
+  /* Keep ruled stats as a wrapping row instead of a tall stack */
+  .trip-day-header--ruled .trip-day-meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.75rem;
+  }
 }
 
 /* =========================================================
@@ -287,14 +522,27 @@ h2.trip-day-title {
   margin: 0;
 }
 
-.trail-section-header .trip-meta-item {
-  font-size: 0.92rem;
-  gap: 0.45rem;
+/* Shared compact stats sizing: Trip Overview + day headers */
+.trail-section-header .trip-meta-bar,
+.trip-day-header--match .trip-day-meta {
+  gap: 0.4rem 0.85rem;
 }
 
-.trail-section-header .trip-meta-icon {
-  width: 18px;
-  height: 18px;
+.trail-section-header .trip-meta-item,
+.trip-day-header--match .trip-meta-item {
+  font-size: 0.92rem;
+  gap: 0.4rem;
+}
+
+.trail-section-header .trip-meta-icon,
+.trip-day-header--match .trip-meta-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.trail-section-header .trip-meta-item + .trip-meta-item,
+.trip-day-header--match .trip-meta-item + .trip-meta-item {
+  padding-left: 0.9rem;
 }
 
 .trip-meta-item {
@@ -305,6 +553,11 @@ h2.trip-day-title {
   font-size: 1.05rem;
   font-weight: 500;
   white-space: nowrap;
+}
+
+.trip-meta-item--campsite {
+  white-space: normal;
+  max-width: 18rem;
 }
 
 .trip-meta-item + .trip-meta-item {
@@ -329,28 +582,309 @@ h2.trip-day-title {
   }
 }
 
-/* Floating route map */
-.trip-map-popout {
+/* Route map nested in Trip Overview */
+.trail-map-block {
+  margin: 0.5rem 0 0.65rem;
+}
+
+.trail-section-header + .trail-map-block {
+  margin-top: 0.5rem;
+}
+
+.trail-map-block + .trail-section-content {
+  margin-top: 0;
+}
+
+.trail-map-block + .trip-day-glance--strip {
+  margin-top: 0.65rem;
+  padding-top: 0;
+  border-top: none;
+}
+
+.trip-day-glance--strip + .trail-section-content {
+  margin-top: 0.75rem;
+}
+
+.trail-map-home:empty {
+  display: none;
+}
+
+/* =========================================================
+   Day-by-day glance strip — centered cluster
+   ========================================================= */
+.trip-day-glance--strip {
+  margin-top: 0.65rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.trip-day-glance-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 0.65rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.35rem;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #c5cbb8 transparent;
+}
+
+.trip-day-glance-strip::-webkit-scrollbar {
+  height: 6px;
+}
+
+.trip-day-glance-strip::-webkit-scrollbar-thumb {
+  background: #c5cbb8;
+  border-radius: 999px;
+}
+
+.trip-day-glance-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex: 0 0 8.25rem;
+  width: 8.25rem;
+  max-width: 8.25rem;
+  min-width: 0;
+  min-height: 100%;
+  padding: 0.85rem 0.55rem 0.9rem;
+  text-align: center;
+  text-decoration: none !important;
+  color: inherit;
+  background: #fff;
+  border: 1px solid #e4e4de;
+  border-radius: calc(var(--radius) * 0.85);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  scroll-snap-align: start;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.trip-day-glance-col:hover {
+  background: #fff;
+  border-color: var(--color-green-light);
+  box-shadow: 0 2px 8px rgba(83, 105, 65, 0.1);
+}
+
+.trip-day-glance-col.is-placeholder {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.trip-day-glance-col .trip-day-glance-day {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8a8a84;
+}
+
+.trip-day-glance-miles {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  vertical-align: middle;
-  margin-left: 0.6rem;
-  padding: 0.3rem;
-  background: none;
-  border: none;
-  border-radius: calc(var(--radius) * 0.75);
+  gap: 0.35rem;
   color: var(--color-green);
+}
+
+.trip-day-glance-miles-value {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.trip-day-glance-unit {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.trip-day-glance-elev {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.05rem;
+  min-height: 2.1em;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #6b7265;
+  white-space: nowrap;
+}
+
+.trip-day-glance-elev--empty {
+  visibility: hidden;
+}
+
+.trip-day-glance-place {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  max-width: 100%;
+  min-height: calc(0.78rem * 1.35 * 2 + 0.5rem);
+  margin-top: auto;
+  padding-top: 0.5rem;
+  border-top: 1px solid #ececea;
+  font-size: 0.78rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #5c6157;
+  box-sizing: border-box;
+}
+
+.trip-day-glance-place--empty {
+  border-top-color: transparent;
+}
+
+.trip-day-glance-place > span:last-child {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-align: left;
+}
+
+.trip-day-glance-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  margin-top: 0.1rem;
+  color: var(--color-green);
+  opacity: 0.85;
+}
+
+.trip-day-glance-miles .trip-day-glance-icon {
+  margin-top: 0;
+  opacity: 1;
+}
+
+.trip-day-glance-icon .trip-meta-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.trip-day-glance-miles .trip-day-glance-icon .trip-meta-icon {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 900px) {
+  .trip-day-glance-col {
+    flex: 0 0 8.25rem;
+    width: 8.25rem;
+    max-width: none;
+  }
+}
+
+/* Floating map control — sidebar green + light motion */
+@keyframes trip-map-fab-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes trip-map-float-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.trip-map-fab {
+  position: fixed;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  z-index: 10001;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: auto;
+  height: auto;
+  padding: 0.7rem 1.05rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-green) !important;
+  color: #fff !important;
+  box-shadow:
+    0 6px 18px rgba(83, 105, 65, 0.35),
+    0 0 0 0 rgba(83, 105, 65, 0.25);
   cursor: pointer;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  animation: trip-map-fab-in 0.45s ease-out both;
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.trip-map-popout:hover {
-  background: #ecece7;
+.trip-map-fab:hover,
+.trip-map-fab:focus,
+.trip-map-fab:focus-visible,
+.trip-map-fab:active {
+  background: var(--color-green-dark) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px rgba(83, 105, 65, 0.45);
+  transform: translateY(-1px);
 }
 
-.trip-map-popout svg {
-  width: 20px;
-  height: 20px;
+.trip-map-fab.is-open,
+.trip-map-fab[hidden] {
+  display: none !important;
+}
+
+.trip-map-fab svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: #fff;
+  color: #fff;
+  transition: transform 0.25s ease;
+}
+
+.trip-map-fab:hover svg {
+  transform: rotate(-8deg) scale(1.05);
+}
+
+.trip-map-fab-label {
+  white-space: nowrap;
+  color: #fff !important;
+}
+
+@media (max-width: 480px) {
+  .trip-map-fab {
+    right: 1rem;
+    bottom: 1rem;
+    padding: 0.65rem 0.95rem;
+    font-size: 0.85rem;
+  }
 }
 
 /* Rounded corners on the docked map */
@@ -367,48 +901,127 @@ h2.trip-day-title {
   min-width: 280px;
   min-height: 220px;
   background: #fff;
+  border: 1px solid rgba(83, 105, 65, 0.28);
   border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-  z-index: 9999;
+  box-shadow:
+    0 12px 36px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(83, 105, 65, 0.08);
+  z-index: 10000;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   resize: both;
+  animation: trip-map-float-in 0.32s ease-out both;
+  transform-origin: bottom right;
+  transition:
+    width 0.25s ease,
+    height 0.25s ease;
+}
+
+.trip-map-float.is-large {
+  width: min(720px, calc(100vw - 2rem));
+  height: min(560px, calc(100vh - 3rem));
 }
 
 .trip-map-float-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 0.75rem;
+  gap: 0.4rem;
+  min-height: 0;
+  padding: 0.2rem 0.35rem 0.2rem 0.55rem;
   background: var(--color-green);
   color: #fff;
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  letter-spacing: 0.02em;
   cursor: move;
   user-select: none;
   touch-action: none;
 }
 
-.trip-map-float-close {
-  background: none;
-  border: none;
-  color: #fff;
-  font-size: 1.4rem;
+.trip-map-float-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.trip-map-float-title svg {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+  stroke: #fff;
+}
+
+.trip-map-float-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.1rem;
+  flex-shrink: 0;
+}
+
+.trip-map-float-enlarge,
+.trip-map-float-enlarge:hover,
+.trip-map-float-enlarge:focus,
+.trip-map-float-enlarge:focus-visible,
+.trip-map-float-enlarge:active,
+.trip-map-float-close,
+.trip-map-float-close:hover,
+.trip-map-float-close:focus,
+.trip-map-float-close:focus-visible,
+.trip-map-float-close:active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 3px;
+  color: #fff !important;
+  font-size: 1.05rem;
   line-height: 1;
   cursor: pointer;
-  padding: 0 0.25rem;
+  padding: 0;
+  opacity: 0.85;
+  box-shadow: none !important;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.trip-map-float-enlarge svg {
+  width: 12px;
+  height: 12px;
+  stroke: currentColor;
+}
+
+.trip-map-float-enlarge:hover,
+.trip-map-float-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.14) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trip-map-fab,
+  .trip-map-float {
+    animation: none;
+  }
+
+  .trip-map-fab,
+  .trip-map-fab svg,
+  .trip-map-float {
+    transition: none;
+  }
 }
 
 .trip-map-float .trail-map-embed {
   flex: 1;
   min-height: 0;
   margin: 0;
-}
-
-/* In the floating panel, show only the map itself */
-.trip-map-float .trail-map-embed > :not(iframe) {
-  display: none;
 }
 
 .trip-map-float .trail-map-embed iframe {
@@ -431,24 +1044,26 @@ h2.trip-day-title {
 .trip-report-layout {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
-  grid-template-rows: auto auto;
   column-gap: 1.25rem;
-  row-gap: 0;
   align-items: start;
   margin-top: 2rem;
   margin-bottom: 3rem;
 }
 
 .trip-report-sidebar {
-  grid-column: 1;
-  grid-row: 1 / -1;
   position: sticky;
   top: 3.5rem;
+  align-self: start;
+}
+
+.trip-report-content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .trip-report-main {
-  grid-column: 2;
-  grid-row: 2;
   min-width: 0;
 }
 
@@ -483,31 +1098,6 @@ h2.trip-day-title {
 .trip-nav-item a {
   flex: 1;
   min-width: 0;
-}
-
-.trip-nav-map-float {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: none;
-  border: none;
-  padding: 0.35rem;
-  border-radius: calc(var(--radius) * 0.75);
-  color: var(--color-green);
-  cursor: pointer;
-}
-
-.trip-nav-map-float:hover {
-  background: #ecece7;
-}
-
-.trip-nav-map-float svg {
-  width: 18px;
-  height: 18px;
-}
-
-.trip-nav-item a {
   display: flex;
   align-items: flex-start;
   gap: 0.8rem;
@@ -972,40 +1562,46 @@ h2.trip-day-title {
 }
 
 .trail-gallery-toggle {
-  margin-top: 12px;
-  padding: 10px 16px;
-  border: 1px solid #ccc;
-  background: #fff;
-  border-radius: var(--radius);
   cursor: pointer;
-  font-size: 0.9rem;
-}
-
-.trail-gallery-toggle:hover {
-  background: #f2f2f2;
-  color: #222;
-}
-
-.trail-gallery-toggle,
-.trail-gallery-toggle:focus,
-.trail-gallery-toggle:active {
-  background: #fff;
-  color: #333;
-  border: 1px solid #ccc;
+  font-family: inherit;
   outline: none;
-  box-shadow: none;
-}
-
-.trail-gallery-toggle:hover,
-.trail-gallery-toggle:focus:hover,
-.trail-gallery-toggle:active:hover {
-  background: #f2f2f2;
-  color: #222;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .trail-gallery-toggle:focus-visible {
   outline: 2px solid var(--color-green);
-  outline-offset: 2px;
+  outline-offset: 3px;
+}
+
+/* Full bar — spans the gallery */
+.trail-gallery-toggle--bar,
+.trail-gallery-toggle--bar:hover,
+.trail-gallery-toggle--bar:focus,
+.trail-gallery-toggle--bar:focus-visible,
+.trail-gallery-toggle--bar:active {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: none !important;
+  border-radius: var(--radius);
+  background: rgba(83, 105, 65, 0.1) !important;
+  color: var(--color-green-dark) !important;
+  box-shadow: none !important;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.trail-gallery-toggle--bar:hover,
+.trail-gallery-toggle--bar:focus-visible {
+  background: rgba(83, 105, 65, 0.16) !important;
+  color: var(--color-green-dark) !important;
 }
 
 .trail-gallery-grid-item:hover .trail-gallery-caption {

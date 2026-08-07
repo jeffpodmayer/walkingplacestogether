@@ -28,5 +28,7 @@ if ( ! $images || ! is_array( $images ) ) {
     <?php endforeach; ?>
   </div>
 
-  <button class="trail-gallery-toggle" type="button">Show all photos</button>
+  <?php if ( count( $images ) > 9 ) : ?>
+    <button class="trail-gallery-toggle trail-gallery-toggle--bar" type="button" data-more="Show more photos" data-fewer="Show fewer photos">Show more photos</button>
+  <?php endif; ?>
 </div>
