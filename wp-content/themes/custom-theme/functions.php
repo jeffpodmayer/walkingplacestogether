@@ -240,7 +240,7 @@ function custom_theme_enqueue_trail_styles() {
   wp_enqueue_style(
     'custom-theme-trail',
     get_stylesheet_directory_uri() . '/css/trail.css',
-    array( 'custom-theme-child-style' ),
+    array( 'custom-theme-child-style', 'glightbox' ),
     filemtime( get_stylesheet_directory() . '/css/trail.css' )
   );
 }
@@ -257,6 +257,19 @@ add_action( 'wp_enqueue_scripts', function() {
     '3.3.0'
   );
 
+  wp_add_inline_style(
+    'glightbox',
+    '#glightbox-body .ginner-container{'
+    . 'width:fit-content!important;max-width:100%!important;margin:0 auto!important;'
+    . 'display:flex!important;flex-direction:column!important;align-items:stretch!important;}'
+    . '#glightbox-body .gslide-description{'
+    . 'position:static!important;width:100%!important;margin:0!important;'
+    . 'padding:1rem 1.25rem!important;background:#000!important;'
+    . 'text-align:center!important;display:block!important;box-sizing:border-box!important;}'
+    . '#glightbox-body .gdesc-inner,#glightbox-body .gslide-title,#glightbox-body .gslide-desc{'
+    . 'text-align:center!important;width:100%!important;margin:0 auto!important;float:none!important;color:#fff!important;}'
+  );
+
   wp_enqueue_script(
     'glightbox',
     'https://cdn.jsdelivr.net/npm/glightbox/dist/js/glightbox.min.js',
@@ -267,7 +280,32 @@ add_action( 'wp_enqueue_scripts', function() {
 
   wp_add_inline_script(
     'glightbox',
-    'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
+    'document.addEventListener("DOMContentLoaded",function(){'
+    . 'var lb=GLightbox({selector:".trail-lightbox"});'
+    . 'function fixCaptions(){'
+    . 'var slide=document.querySelector("#glightbox-body .gslide.current")||document.querySelector("#glightbox-body .gslide");'
+    . 'if(!slide)return;'
+    . 'var img=slide.querySelector(".gslide-media img,.gslide-image img");'
+    . 'var desc=slide.querySelector(".gslide-description");'
+    . 'var wrap=slide.querySelector(".ginner-container");'
+    . 'if(img&&wrap){wrap.style.setProperty("width",img.getBoundingClientRect().width+"px","important");}'
+    . 'if(desc){'
+    . 'desc.style.setProperty("position","static","important");'
+    . 'desc.style.setProperty("width","100%","important");'
+    . 'desc.style.setProperty("text-align","center","important");'
+    . 'desc.style.setProperty("background","#000","important");'
+    . 'desc.style.setProperty("display","block","important");'
+    . '}'
+    . 'slide.querySelectorAll(".gslide-title,.gslide-desc,.gdesc-inner").forEach(function(el){'
+    . 'el.style.setProperty("text-align","center","important");'
+    . 'el.style.setProperty("width","100%","important");'
+    . 'el.style.setProperty("color","#fff","important");'
+    . '});'
+    . '}'
+    . 'lb.on("open",function(){requestAnimationFrame(fixCaptions);});'
+    . 'lb.on("slide_changed",function(){requestAnimationFrame(fixCaptions);});'
+    . 'window.addEventListener("resize",function(){if(document.getElementById("glightbox-body"))fixCaptions();});'
+    . '});'
   );
 } );
 
