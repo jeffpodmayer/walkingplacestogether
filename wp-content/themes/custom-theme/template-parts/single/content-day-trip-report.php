@@ -21,10 +21,36 @@ $resource_links   = get_field( 'trip_report_resource_links' );
 $photo_gallery    = get_field( 'photo_gallery' );
 $related_reports  = get_field( 'related_trip_reports' );
 
-$trip_date = '';
-if ( $start_date ) {
+// Day-trip stats live in the Day 1 ACF fields when filled.
+$day_distance = get_field( 'day_1_distance' );
+if ( $day_distance === null || $day_distance === false || $day_distance === '' ) {
+  $day_distance = get_field( 'day_1_distance_copy' );
+}
+if ( $day_distance !== null && $day_distance !== false && $day_distance !== '' ) {
+  $distance = $day_distance;
+}
+
+$elevation_gain = get_field( 'day_1_elevation_gain' );
+$elevation_loss = get_field( 'day_1_elevation_loss' );
+$campsite       = get_field( 'day_1_campsite' );
+
+$day_date_raw   = get_field( 'day_1_date' );
+$trip_date      = '';
+$trip_date_short = '';
+if ( $day_date_raw ) {
+  $parsed_date = custom_theme_parse_acf_date( $day_date_raw );
+  if ( $parsed_date ) {
+    $ts              = $parsed_date->getTimestamp();
+    $trip_date       = date_i18n( 'M j, Y', $ts );
+    $trip_date_short = date_i18n( 'm/d/Y', $ts );
+  }
+} elseif ( $start_date ) {
   $parsed_date = custom_theme_parse_acf_date( $start_date );
-  $trip_date   = $parsed_date ? date_i18n( 'M j, Y', $parsed_date->getTimestamp() ) : '';
+  if ( $parsed_date ) {
+    $ts              = $parsed_date->getTimestamp();
+    $trip_date       = date_i18n( 'M j, Y', $ts );
+    $trip_date_short = date_i18n( 'm/d/Y', $ts );
+  }
 }
 
 // ── Helper: normalize an ACF/Galerie image to id/url/caption ─────
@@ -149,24 +175,43 @@ $hero = $normalize_image( $hero_image );
   <div class="trail-content-wrap">
 
     <?php
-    // Meta bar (miles / date), rendered below the Trip Report heading
+    // Meta bar (miles / elev / campsite); date sits beside the title
     $meta_bar_html = '';
-    if ( $distance || $trip_date ) {
-      $meta_bar_html .= '<div class="trip-meta-bar">';
+    if ( $distance || $elevation_gain || $elevation_loss || $campsite ) {
+      $meta_bar_html .= '<div class="trip-meta-bar trip-day-meta">';
+
       if ( $distance ) {
         $meta_bar_html .= '<div class="trip-meta-item">'
           . custom_theme_trip_meta_icon( 'route' )
-          . '<span>' . esc_html( custom_theme_format_distance( $distance ) ) . ' miles</span>'
+          . '<span>' . esc_html( custom_theme_format_distance( $distance, 0 ) ) . ' miles</span>'
           . '</div>';
       }
-      if ( $trip_date ) {
+
+      if ( $elevation_gain || $elevation_loss ) {
+        $elev_parts = [];
+        if ( $elevation_gain ) {
+          $elev_parts[] = '+ ' . custom_theme_format_elevation( $elevation_gain );
+        }
+        if ( $elevation_loss ) {
+          $elev_parts[] = '− ' . custom_theme_format_elevation( $elevation_loss );
+        }
         $meta_bar_html .= '<div class="trip-meta-item">'
-          . custom_theme_trip_meta_icon( 'calendar' )
-          . '<span>' . esc_html( $trip_date ) . '</span>'
+          . custom_theme_trip_meta_icon( 'mountain' )
+          . '<span>' . esc_html( implode( ' / ', $elev_parts ) ) . ' ft</span>'
           . '</div>';
       }
+
+      if ( $campsite ) {
+        $meta_bar_html .= '<div class="trip-meta-item trip-meta-item--campsite">'
+          . custom_theme_trip_meta_icon( 'tent' )
+          . '<span>' . esc_html( $campsite ) . '</span>'
+          . '</div>';
+      }
+
       $meta_bar_html .= '</div>';
     }
+
+    $has_day_trip_header = $trip_date || $meta_bar_html;
     ?>
 
     <?php
@@ -184,7 +229,8 @@ $hero = $normalize_image( $hero_image );
     <aside class="trip-report-sidebar">
       <?php
       get_template_part( 'template-parts/trail/trip-nav', null, [
-        'items' => $nav_items,
+        'items'    => $nav_items,
+        'show_map' => (bool) $map_url,
       ] );
       ?>
     </aside>
@@ -220,10 +266,24 @@ $hero = $normalize_image( $hero_image );
 
     <?php if ( $trip_overview || $map_html ) : ?>
       <div class="day-trip-block" id="day-trip-report">
-        <div class="trail-section-header">
+        <?php if ( $has_day_trip_header ) : ?>
+          <div class="trip-day-header trip-day-header--match">
+            <div class="trip-day-title-row">
+              <h2 class="trip-day-title">Trip Report</h2>
+              <?php if ( $trip_date ) : ?>
+                <p class="trip-day-date">
+                  <span class="trip-day-date-long"><?php echo esc_html( $trip_date ); ?></span>
+                  <?php if ( $trip_date_short ) : ?>
+                    <span class="trip-day-date-short"><?php echo esc_html( $trip_date_short ); ?></span>
+                  <?php endif; ?>
+                </p>
+              <?php endif; ?>
+            </div>
+            <?php echo $meta_bar_html; ?>
+          </div>
+        <?php else : ?>
           <h2 class="trip-day-title">Trip Report</h2>
-          <?php echo $meta_bar_html; ?>
-        </div>
+        <?php endif; ?>
         <?php echo $map_html; ?>
         <?php if ( $trip_overview ) : ?>
           <div class="trail-section-content">
@@ -231,8 +291,21 @@ $hero = $normalize_image( $hero_image );
           </div>
         <?php endif; ?>
       </div>
-    <?php elseif ( $meta_bar_html ) : ?>
-      <?php echo $meta_bar_html; ?>
+    <?php elseif ( $has_day_trip_header ) : ?>
+      <div class="trip-day-header trip-day-header--match">
+        <div class="trip-day-title-row">
+          <h2 class="trip-day-title">Trip Report</h2>
+          <?php if ( $trip_date ) : ?>
+            <p class="trip-day-date">
+              <span class="trip-day-date-long"><?php echo esc_html( $trip_date ); ?></span>
+              <?php if ( $trip_date_short ) : ?>
+                <span class="trip-day-date-short"><?php echo esc_html( $trip_date_short ); ?></span>
+              <?php endif; ?>
+            </p>
+          <?php endif; ?>
+        </div>
+        <?php echo $meta_bar_html; ?>
+      </div>
     <?php endif; ?>
 
     <?php if ( $gear_notes ) : ?>

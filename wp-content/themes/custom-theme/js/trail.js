@@ -18,19 +18,26 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
+  const galleryLimit = () =>
+    window.matchMedia("(max-width: 900px)").matches ? 5 : 9;
+
+  const syncGalleryToggle = (btn) => {
+    const grid = btn.previousElementSibling;
+    if (!grid || !grid.classList.contains("trail-gallery-grid")) return;
+
+    const total = grid.querySelectorAll(".trail-gallery-grid-item").length;
+    const limit = galleryLimit();
+    btn.hidden = total <= limit;
+  };
+
   document.querySelectorAll(".trail-gallery-toggle").forEach((btn) => {
     const grid = btn.previousElementSibling;
     if (!grid || !grid.classList.contains("trail-gallery-grid")) return;
 
     const moreLabel = btn.dataset.more || "Show all photos";
     const fewerLabel = btn.dataset.fewer || "Show fewer photos";
-    const total = grid.querySelectorAll(".trail-gallery-grid-item").length;
 
-    // Hide toggle when there is nothing to expand.
-    if (total <= 9) {
-      btn.hidden = true;
-      return;
-    }
+    syncGalleryToggle(btn);
 
     btn.addEventListener("click", () => {
       const collapsed = grid.getAttribute("data-collapsed") === "true";
@@ -38,17 +45,36 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.textContent = collapsed ? fewerLabel : moreLabel;
     });
   });
+
+  window.addEventListener("resize", () => {
+    document
+      .querySelectorAll(".trail-gallery-toggle")
+      .forEach(syncGalleryToggle);
+  });
 });
 
 // Trip nav: multi-day reports use tabs; day-trip reports are one continuous scroll.
+// Mobile uses a bottom dock (+ Days/More sheets) wired through the same anchors.
 document.addEventListener("DOMContentLoaded", () => {
   const main = document.querySelector(".trip-report-main");
-  const links = Array.from(document.querySelectorAll(".trip-nav-item a"));
-  if (!main || !links.length) return;
+  const sidebarLinks = Array.from(
+    document.querySelectorAll(".trip-nav-item a.js-trip-nav-link")
+  );
+  const allNavLinks = Array.from(document.querySelectorAll("a.js-trip-nav-link"));
+  if (!main || !sidebarLinks.length) return;
 
   const isDayTrip = Boolean(document.querySelector(".single-day-trip-report"));
 
-  const targets = links
+  // Keep fixed dock/sheets out of the sticky sidebar stacking context.
+  const dockEl = document.querySelector("[data-trip-dock]");
+  const backdropEl = document.querySelector("[data-trip-sheet-backdrop]");
+  document.querySelectorAll("[data-trip-sheet-panel]").forEach((panel) => {
+    document.body.appendChild(panel);
+  });
+  if (backdropEl) document.body.appendChild(backdropEl);
+  if (dockEl) document.body.appendChild(dockEl);
+
+  const targets = sidebarLinks
     .map((link) => {
       const id = link.getAttribute("href").slice(1);
       const el = document.getElementById(id);
@@ -57,12 +83,20 @@ document.addEventListener("DOMContentLoaded", () => {
     .filter(Boolean);
   if (!targets.length) return;
 
+  const targetByHref = new Map(
+    targets.map((t) => ["#" + t.el.id, t])
+  );
+
   // Clear sticky sidebar + WP admin bar so section titles aren't clipped.
   const stickyOffset = () => {
     const sidebar = document.querySelector(".trip-report-sidebar");
-    const stickyTop = sidebar
-      ? parseFloat(getComputedStyle(sidebar).top) || 0
-      : 0;
+    const isMobileNav =
+      window.matchMedia("(max-width: 900px)").matches &&
+      Boolean(document.querySelector("[data-trip-dock]"));
+    const stickyTop =
+      !isMobileNav && sidebar
+        ? parseFloat(getComputedStyle(sidebar).top) || 0
+        : 0;
     const adminBar = document.getElementById("wpadminbar");
     const adminBottom =
       adminBar && getComputedStyle(adminBar).position === "fixed"
@@ -71,8 +105,45 @@ document.addEventListener("DOMContentLoaded", () => {
     return Math.max(stickyTop, adminBottom) + 8;
   };
 
+  const syncDock = (href) => {
+    const dock = document.querySelector("[data-trip-dock]");
+    if (!dock) return;
+
+    let group = null;
+    const direct = dock.querySelector(
+      `.trip-dock-bar a.trip-dock-item[href="${href}"]`
+    );
+    if (/^#trip-day-/.test(href)) {
+      group = "days";
+    } else if (direct) {
+      group = direct.dataset.tripDockGroup;
+    } else if (
+      document.querySelector(
+        `#trip-dock-sheet-more a.js-trip-nav-link[href="${href}"]`
+      )
+    ) {
+      group = "more";
+    }
+
+    dock.querySelectorAll("[data-trip-dock-group]").forEach((el) => {
+      // Map open state is managed separately (is-map-open).
+      if (el.dataset.tripDockGroup === "map") return;
+      el.classList.toggle("is-active", el.dataset.tripDockGroup === group);
+    });
+
+    document
+      .querySelectorAll(".trip-dock-sheet-link.js-trip-nav-link")
+      .forEach((el) => {
+        el.classList.toggle("is-active", el.getAttribute("href") === href);
+      });
+  };
+
   const setActiveLink = (link) => {
-    links.forEach((l) => l.classList.toggle("is-active", l === link));
+    const href = link.getAttribute("href");
+    allNavLinks.forEach((l) =>
+      l.classList.toggle("is-active", l.getAttribute("href") === href)
+    );
+    syncDock(href);
   };
 
   const scrollToEl = (el) => {
@@ -81,17 +152,177 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: Math.max(0, y) });
   };
 
+  // ── Mobile sheets (Days / More) ───────────────────────────────
+  const backdrop = document.querySelector("[data-trip-sheet-backdrop]");
+  const sheetPanels = Array.from(
+    document.querySelectorAll("[data-trip-sheet-panel]")
+  );
+  const sheetButtons = Array.from(document.querySelectorAll("[data-trip-sheet]"));
+
+  const closeSheets = () => {
+    sheetPanels.forEach((panel) => {
+      panel.hidden = true;
+      panel.classList.remove("is-dragging");
+      panel.style.transform = "";
+      panel.style.transition = "";
+    });
+    if (backdrop) {
+      backdrop.hidden = true;
+      backdrop.style.opacity = "";
+    }
+    sheetButtons.forEach((btn) => {
+      btn.setAttribute("aria-expanded", "false");
+    });
+    document.body.classList.remove("trip-dock-sheet-open");
+  };
+
+  const openSheet = (name) => {
+    const panel = document.querySelector(`[data-trip-sheet-panel="${name}"]`);
+    if (!panel) return;
+    sheetPanels.forEach((p) => {
+      p.hidden = p !== panel;
+      p.classList.remove("is-dragging");
+      p.style.transform = "";
+      p.style.transition = "";
+    });
+    if (backdrop) {
+      backdrop.hidden = false;
+      backdrop.style.opacity = "";
+    }
+    sheetButtons.forEach((btn) => {
+      const open = btn.dataset.tripSheet === name;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+    document.body.classList.add("trip-dock-sheet-open");
+  };
+
+  sheetButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.tripSheet;
+      const isOpen =
+        btn.getAttribute("aria-expanded") === "true" &&
+        document.querySelector(`[data-trip-sheet-panel="${name}"]:not([hidden])`);
+      if (isOpen) {
+        closeSheets();
+      } else {
+        openSheet(name);
+      }
+      btn.blur();
+    });
+  });
+
+  if (backdrop) {
+    backdrop.addEventListener("click", closeSheets);
+  }
+  document.querySelectorAll("[data-trip-sheet-close]").forEach((btn) => {
+    btn.addEventListener("click", closeSheets);
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeSheets();
+  });
+
+  // Swipe sheet down to dismiss from the handle / header.
+  sheetPanels.forEach((panel) => {
+    let drag = null;
+
+    const onPointerDown = (e) => {
+      if (panel.hidden || e.button) return;
+      if (e.target.closest(".trip-dock-sheet-close")) return;
+      if (!e.target.closest(".trip-dock-sheet-handle, .trip-dock-sheet-header")) {
+        return;
+      }
+
+      drag = {
+        pointerId: e.pointerId,
+        startY: e.clientY,
+        lastY: e.clientY,
+        lastT: performance.now(),
+        dy: 0,
+        active: false,
+      };
+      panel.setPointerCapture(e.pointerId);
+    };
+
+    const onPointerMove = (e) => {
+      if (!drag || e.pointerId !== drag.pointerId) return;
+      const dy = e.clientY - drag.startY;
+      const now = performance.now();
+
+      if (!drag.active) {
+        if (dy < 6) return;
+        drag.active = true;
+        panel.classList.add("is-dragging");
+        panel.style.transition = "none";
+      }
+
+      drag.dy = Math.max(0, dy);
+      drag.lastY = e.clientY;
+      drag.lastT = now;
+      panel.style.transform = `translateY(${drag.dy}px)`;
+      if (backdrop) {
+        const fade = Math.max(0.25, 1 - drag.dy / 280);
+        backdrop.style.opacity = String(fade);
+      }
+    };
+
+    const finishDrag = (e) => {
+      if (!drag || e.pointerId !== drag.pointerId) return;
+      const { dy, active, lastY, lastT } = drag;
+      const elapsed = Math.max(1, performance.now() - lastT);
+      const velocity = active ? (e.clientY - lastY) / elapsed : 0;
+      drag = null;
+
+      panel.classList.remove("is-dragging");
+
+      if (active && (dy > 90 || velocity > 0.45)) {
+        panel.style.transition = "transform 0.2s ease-out";
+        panel.style.transform = `translateY(110%)`;
+        if (backdrop) {
+          backdrop.style.transition = "opacity 0.2s ease-out";
+          backdrop.style.opacity = "0";
+        }
+        window.setTimeout(() => {
+          if (backdrop) backdrop.style.transition = "";
+          closeSheets();
+        }, 200);
+        return;
+      }
+
+      panel.style.transition = "transform 0.22s ease-out";
+      panel.style.transform = "";
+      if (backdrop) {
+        backdrop.style.transition = "opacity 0.22s ease-out";
+        backdrop.style.opacity = "";
+        window.setTimeout(() => {
+          backdrop.style.transition = "";
+        }, 220);
+      }
+      window.setTimeout(() => {
+        panel.style.transition = "";
+      }, 220);
+    };
+
+    panel.addEventListener("pointerdown", onPointerDown);
+    panel.addEventListener("pointermove", onPointerMove);
+    panel.addEventListener("pointerup", finishDrag);
+    panel.addEventListener("pointercancel", finishDrag);
+  });
+
   // ── Day trip: everything visible, sidebar jumps + scroll-spy ──
   if (isDayTrip) {
     const scrollToTarget = (target) => {
       scrollToEl(target.el);
       setActiveLink(target.link);
       history.replaceState(null, "", "#" + target.el.id);
+      closeSheets();
       target.link.blur();
     };
 
-    targets.forEach((target) => {
-      target.link.addEventListener("click", (e) => {
+    allNavLinks.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        const href = link.getAttribute("href");
+        const target = targetByHref.get(href);
+        if (!target) return;
         e.preventDefault();
         scrollToTarget(target);
       });
@@ -179,13 +410,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     setActiveLink(target.link);
     history.replaceState(null, "", "#" + target.el.id);
+    closeSheets();
   };
 
-  targets.forEach((target) => {
-    target.link.addEventListener("click", (e) => {
+  allNavLinks.forEach((link) => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      const target = targetByHref.get(href);
+      if (!target) return;
       e.preventDefault();
       openTarget(target);
-      target.link.blur();
+      link.blur();
     });
   });
 
@@ -193,7 +428,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const link = e.target.closest("a.js-trip-goto");
     if (!link) return;
     const href = link.getAttribute("href");
-    const target = targets.find((t) => "#" + t.el.id === href);
+    const target = targetByHref.get(href);
     if (!target) return;
     e.preventDefault();
     openTarget(target);
@@ -231,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Floating route map: fixed bottom-right FAB toggles a floating map panel
+// Floating route map: FAB on desktop; mobile dock Map item on smaller screens
 document.addEventListener("DOMContentLoaded", () => {
   const embed = document.querySelector(".trail-map-embed");
   const home = document.querySelector(".trail-map-home");
@@ -247,25 +482,41 @@ document.addEventListener("DOMContentLoaded", () => {
   fab.innerHTML = mapIcon + '<span class="trip-map-fab-label">Map</span>';
   document.body.appendChild(fab);
 
+  const dockMapBtns = () =>
+    Array.from(document.querySelectorAll("[data-trip-map-toggle]"));
+
   let panel = null;
 
-  const setFabState = (open) => {
+  const setMapOpen = (open) => {
     fab.classList.toggle("is-open", open);
     fab.hidden = open;
     fab.setAttribute("aria-pressed", open ? "true" : "false");
     fab.setAttribute("aria-hidden", open ? "true" : "false");
-    fab.title = "Open map while you scroll";
-    fab.setAttribute("aria-label", "Open map while you scroll");
+    fab.title = open ? "Close map" : "Open map while you scroll";
+    fab.setAttribute(
+      "aria-label",
+      open ? "Close map" : "Open map while you scroll"
+    );
+
+    dockMapBtns().forEach((btn) => {
+      btn.classList.toggle("is-map-open", open);
+      btn.classList.remove("is-active");
+      btn.setAttribute("aria-pressed", open ? "true" : "false");
+      btn.setAttribute(
+        "aria-label",
+        open ? "Close map" : "Open map while you scroll"
+      );
+    });
   };
 
-  setFabState(false);
+  setMapOpen(false);
 
-  const dock = () => {
+  const dockMap = () => {
     if (!panel) return;
     home.appendChild(embed);
     panel.remove();
     panel = null;
-    setFabState(false);
+    setMapOpen(false);
   };
 
   const enlargeIcon =
@@ -292,7 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "</div>";
     document.body.appendChild(panel);
     panel.appendChild(embed);
-    setFabState(true);
+    setMapOpen(true);
 
     const enlargeBtn = panel.querySelector(".trip-map-float-enlarge");
     const setEnlarged = (large) => {
@@ -312,7 +563,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     panel
       .querySelector(".trip-map-float-close")
-      .addEventListener("click", dock);
+      .addEventListener("click", dockMap);
 
     const bar = panel.querySelector(".trip-map-float-bar");
     let drag = null;
@@ -334,8 +585,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
+  const toggleMap = () => {
+    if (panel) dockMap();
+    else popOut();
+  };
+
   fab.addEventListener("click", () => {
     if (!panel) popOut();
+  });
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-trip-map-toggle]");
+    if (!btn) return;
+    e.preventDefault();
+    toggleMap();
+    btn.blur();
   });
 });
 

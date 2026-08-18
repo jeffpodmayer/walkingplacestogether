@@ -36,13 +36,16 @@ for ( $i = 1; $i <= 12; $i++ ) {
       $day_distance = get_field( "day_{$i}_distance_copy" );
     }
 
-    $day_date_raw = get_field( "day_{$i}_date" );
-    $day_date     = '';
+    $day_date_raw   = get_field( "day_{$i}_date" );
+    $day_date       = '';
+    $day_date_short = '';
     if ( $day_date_raw ) {
       $parsed_day_date = custom_theme_parse_acf_date( $day_date_raw );
-      $day_date        = $parsed_day_date
-        ? date_i18n( 'M j, Y', $parsed_day_date->getTimestamp() )
-        : '';
+      if ( $parsed_day_date ) {
+        $ts             = $parsed_day_date->getTimestamp();
+        $day_date       = date_i18n( 'M j, Y', $ts );
+        $day_date_short = date_i18n( 'm/d/Y', $ts );
+      }
     }
 
     $days[ $i ] = [
@@ -54,6 +57,7 @@ for ( $i = 1; $i <= 12; $i++ ) {
       'elevation_loss' => get_field( "day_{$i}_elevation_loss" ),
       'campsite'       => get_field( "day_{$i}_campsite" ),
       'date'           => $day_date,
+      'date_short'     => $day_date_short,
     ];
   }
 }
@@ -178,10 +182,20 @@ $render_gallery = function( $images, $extra_class = '', $collapsible = false ) u
   <div class="trail-content-wrap">
 
     <?php
-    // ── Meta bar (miles / days / dates), rendered below the Trip Overview heading
+    // ── Meta bar (date / miles / days), rendered below the Trip Overview heading
     $meta_bar_html = '';
     if ( $distance || $trip_duration || $start_date || $end_date ) {
       $meta_bar_html .= '<div class="trip-meta-bar">';
+
+      if ( $start_date || $end_date ) {
+        $range = custom_theme_format_trip_date_range( $start_date, $end_date );
+        if ( $range ) {
+          $meta_bar_html .= '<div class="trip-meta-item trip-meta-item--date">'
+            . custom_theme_trip_meta_icon( 'calendar' )
+            . '<span>' . esc_html( $range ) . '</span>'
+            . '</div>';
+        }
+      }
 
       if ( $distance ) {
         $meta_bar_html .= '<div class="trip-meta-item">'
@@ -195,16 +209,6 @@ $render_gallery = function( $images, $extra_class = '', $collapsible = false ) u
           . custom_theme_trip_meta_icon( 'sun' )
           . '<span>' . esc_html( custom_theme_format_days( $trip_duration ) ) . '</span>'
           . '</div>';
-      }
-
-      if ( $start_date || $end_date ) {
-        $range = custom_theme_format_trip_date_range( $start_date, $end_date );
-        if ( $range ) {
-          $meta_bar_html .= '<div class="trip-meta-item">'
-            . custom_theme_trip_meta_icon( 'calendar' )
-            . '<span>' . esc_html( $range ) . '</span>'
-            . '</div>';
-        }
       }
 
       $meta_bar_html .= '</div>';
@@ -282,7 +286,8 @@ $render_gallery = function( $images, $extra_class = '', $collapsible = false ) u
     <aside class="trip-report-sidebar">
       <?php
       get_template_part( 'template-parts/trail/trip-nav', null, [
-        'items' => $nav_items,
+        'items'    => $nav_items,
+        'show_map' => (bool) $map_url,
       ] );
       ?>
     </aside>
@@ -471,7 +476,12 @@ $render_gallery = function( $images, $extra_class = '', $collapsible = false ) u
                 <div class="trip-day-title-row">
                   <h2 class="trip-day-title"><?php echo $day_title_html; ?></h2>
                   <?php if ( $day['date'] ) : ?>
-                    <p class="trip-day-date"><?php echo esc_html( $day['date'] ); ?></p>
+                    <p class="trip-day-date">
+                      <span class="trip-day-date-long"><?php echo esc_html( $day['date'] ); ?></span>
+                      <?php if ( ! empty( $day['date_short'] ) ) : ?>
+                        <span class="trip-day-date-short"><?php echo esc_html( $day['date_short'] ); ?></span>
+                      <?php endif; ?>
+                    </p>
                   <?php endif; ?>
                 </div>
                 <?php echo $day_meta_html; ?>

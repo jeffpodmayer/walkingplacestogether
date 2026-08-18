@@ -171,6 +171,10 @@ function custom_theme_trip_meta_icon( $name ) {
       return '<svg ' . $attrs . '><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z"/></svg>';
     case 'footprints':
       return '<svg ' . $attrs . '><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 10 3.8 10 5.5c0 3.11-2 5.66-2 8.68V16a2 2 0 1 1-4 0Z"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 14 7.8 14 9.5c0 3.11 2 5.66 2 8.68V20a2 2 0 1 0 4 0Z"/><path d="M16 17h4"/><path d="M4 13h4"/></svg>';
+    case 'list':
+      return '<svg ' . $attrs . '><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>';
+    case 'more':
+      return '<svg ' . $attrs . '><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>';
   }
   return '';
 }
@@ -266,6 +270,177 @@ add_action( 'wp_enqueue_scripts', function() {
     'document.addEventListener("DOMContentLoaded",function(){GLightbox({selector: ".trail-lightbox"});});'
   );
 } );
+
+/**
+ * Resolve a human caption for a content image (prefer caption over alt/UUID).
+ */
+function custom_theme_lightbox_image_caption( DOMElement $img, DOMXPath $xpath ) {
+  // Figcaption beside the image.
+  $fig = $xpath->query( 'ancestor::figure[1]//figcaption', $img )->item( 0 );
+  if ( $fig ) {
+    $text = trim( preg_replace( '/\s+/', ' ', $fig->textContent ) );
+    if ( $text !== '' ) {
+      return $text;
+    }
+  }
+
+  // Classic editor caption.
+  $cap = $xpath->query( 'ancestor::*[contains(concat(" ", normalize-space(@class), " "), " wp-caption ")][1]//*[contains(concat(" ", normalize-space(@class), " "), " wp-caption-text ")]', $img )->item( 0 );
+  if ( $cap ) {
+    $text = trim( preg_replace( '/\s+/', ' ', $cap->textContent ) );
+    if ( $text !== '' ) {
+      return $text;
+    }
+  }
+
+  // Media library caption / title from attachment ID.
+  if ( preg_match( '/wp-image-(\d+)/', $img->getAttribute( 'class' ), $match ) ) {
+    $id = (int) $match[1];
+    $caption = wp_get_attachment_caption( $id );
+    if ( is_string( $caption ) && trim( $caption ) !== '' ) {
+      return trim( $caption );
+    }
+    $title = get_the_title( $id );
+    if ( is_string( $title ) && trim( $title ) !== '' && ! custom_theme_lightbox_is_junk_label( $title ) ) {
+      return trim( $title );
+    }
+  }
+
+  $alt = trim( $img->getAttribute( 'alt' ) );
+  if ( $alt !== '' && ! custom_theme_lightbox_is_junk_label( $alt ) ) {
+    return $alt;
+  }
+
+  $title_attr = trim( $img->getAttribute( 'title' ) );
+  if ( $title_attr !== '' && ! custom_theme_lightbox_is_junk_label( $title_attr ) ) {
+    return $title_attr;
+  }
+
+  return '';
+}
+
+/**
+ * Detect UUID / hash-like labels that shouldn't appear as captions.
+ */
+function custom_theme_lightbox_is_junk_label( $label ) {
+  $label = trim( $label );
+  if ( $label === '' ) {
+    return true;
+  }
+
+  // UUID with or without hyphens/spaces.
+  if ( preg_match( '/^[0-9a-f]{8}[- ]?[0-9a-f]{4}[- ]?[0-9a-f]{4}[- ]?[0-9a-f]{4}[- ]?[0-9a-f]{12}$/i', $label ) ) {
+    return true;
+  }
+
+  // Bare hex hash / filename stem.
+  if ( preg_match( '/^[0-9a-f]{16,}$/i', $label ) ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Make images in WYSIWYG / post content open in the same lightbox as galleries.
+ */
+function custom_theme_lightbox_content_images( $content ) {
+  if ( ! is_string( $content ) || $content === '' || false === stripos( $content, '<img' ) ) {
+    return $content;
+  }
+
+  if ( is_admin() && ! wp_doing_ajax() ) {
+    return $content;
+  }
+
+  $wrapped = '<div id="custom-theme-lightbox-root">' . $content . '</div>';
+  $dom     = new DOMDocument();
+  $prev    = libxml_use_internal_errors( true );
+  $dom->loadHTML( '<?xml encoding="utf-8">' . $wrapped, LIBXML_HTML_NODEFDTD );
+  libxml_clear_errors();
+  libxml_use_internal_errors( $prev );
+
+  $root = $dom->getElementById( 'custom-theme-lightbox-root' );
+  if ( ! $root ) {
+    return $content;
+  }
+
+  $xpath = new DOMXPath( $dom );
+
+  // Wrap bare images (not already inside a link).
+  $imgs = $xpath->query( './/img[not(ancestor::a)]', $root );
+  if ( $imgs ) {
+    foreach ( $imgs as $img ) {
+      $src = $img->getAttribute( 'src' );
+      if ( ! $src ) {
+        continue;
+      }
+
+      $href  = $src;
+      $att_id = 0;
+      if ( preg_match( '/wp-image-(\d+)/', $img->getAttribute( 'class' ), $match ) ) {
+        $att_id = (int) $match[1];
+        $full   = wp_get_attachment_image_url( $att_id, 'full' );
+        if ( $full ) {
+          $href = $full;
+        }
+      }
+
+      $link = $dom->createElement( 'a' );
+      $link->setAttribute( 'href', esc_url( $href ) );
+      $link->setAttribute( 'class', 'trail-lightbox' );
+      $caption = custom_theme_lightbox_image_caption( $img, $xpath );
+      if ( $caption !== '' ) {
+        $link->setAttribute( 'data-title', $caption );
+      }
+
+      $img->parentNode->insertBefore( $link, $img );
+      $link->appendChild( $img );
+    }
+  }
+
+  // Promote existing image links to the lightbox + fix titles.
+  $links = $xpath->query( './/a[.//img]', $root );
+  if ( $links ) {
+    foreach ( $links as $link ) {
+      $class = $link->getAttribute( 'class' );
+      $href  = $link->getAttribute( 'href' );
+      $is_image_link = (bool) preg_match( '/\.(jpe?g|png|gif|webp|avif)(\?|#|$)/i', $href )
+        || false !== strpos( $href, '/uploads/' )
+        || strpos( $class, 'trail-lightbox' ) !== false;
+
+      if ( ! $is_image_link ) {
+        continue;
+      }
+
+      if ( strpos( $class, 'trail-lightbox' ) === false ) {
+        $link->setAttribute( 'class', trim( $class . ' trail-lightbox' ) );
+      }
+
+      $img = $xpath->query( './/img', $link )->item( 0 );
+      if ( ! $img ) {
+        continue;
+      }
+
+      $caption = custom_theme_lightbox_image_caption( $img, $xpath );
+      $existing = $link->getAttribute( 'data-title' );
+      if ( $caption !== '' ) {
+        $link->setAttribute( 'data-title', $caption );
+      } elseif ( $existing !== '' && custom_theme_lightbox_is_junk_label( $existing ) ) {
+        $link->removeAttribute( 'data-title' );
+      }
+    }
+  }
+
+  $out = '';
+  foreach ( $root->childNodes as $child ) {
+    $out .= $dom->saveHTML( $child );
+  }
+
+  return $out !== '' ? $out : $content;
+}
+add_filter( 'acf_the_content', 'custom_theme_lightbox_content_images', 20 );
+add_filter( 'the_content', 'custom_theme_lightbox_content_images', 20 );
 
 add_action( 'wp_enqueue_scripts', function() {
   if ( ! custom_theme_is_trail_page() ) {

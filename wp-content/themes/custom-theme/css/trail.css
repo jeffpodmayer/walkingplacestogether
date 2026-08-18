@@ -99,7 +99,8 @@ h1.entry-title.trip-report-title {
   margin-top: 2rem;
 }
 
-.single-day-trip-report .day-trip-block > .trip-day-title {
+.single-day-trip-report .day-trip-block > .trip-day-title,
+.single-day-trip-report .day-trip-block > .trip-day-header {
   margin-top: 0;
 }
 
@@ -259,8 +260,9 @@ h2.trip-day-title {
 
 .trip-day-date {
   flex: 0 0 auto;
-  margin: 0.2rem 0 0;
-  padding-top: 0.15rem;
+  margin: 0;
+  /* Nudge down so the date sits on the title’s first line */
+  padding: 0.35em 0 0;
   color: #6b7265;
   font-family: var(--font-body);
   font-size: 0.95rem;
@@ -270,22 +272,13 @@ h2.trip-day-title {
   text-align: right;
 }
 
+.trip-day-date-short {
+  display: none;
+}
+
 .trip-day-header .trip-day-meta {
   width: 100%;
   margin: 0;
-}
-
-@media (max-width: 700px) {
-  .trip-day-title-row {
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .trip-day-date {
-    margin-top: 0;
-    padding-top: 0;
-    text-align: left;
-  }
 }
 
 /* ── Day meta style A: match (default) ─────────────────────────
@@ -357,20 +350,6 @@ h2.trip-day-title {
   content: "·";
   margin-right: 0.85rem;
   color: #b0b0a8;
-}
-
-@media (max-width: 700px) {
-  .trip-day-header--muted .trip-meta-item + .trip-meta-item::before {
-    display: none;
-  }
-
-  /* Keep ruled stats as a wrapping row instead of a tall stack */
-  .trip-day-header--ruled .trip-day-meta {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.75rem;
-  }
 }
 
 /* =========================================================
@@ -570,14 +549,101 @@ h2.trip-day-title {
 }
 
 @media (max-width: 700px) {
-  .trip-meta-bar {
+  .trail-section-header {
     flex-direction: column;
-    gap: 0.75rem;
     align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .trail-section-header .trail-section-title,
+  .trail-section-header .trip-day-title {
+    margin-bottom: 0.15rem;
+  }
+
+  .trail-section-header .trip-meta-bar,
+  .trip-day-header .trip-day-meta {
+    width: 100%;
+  }
+
+  .trip-day-title-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .trip-day-date {
+    margin: 0;
+    padding: 0.4em 0 0;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: #8a8f84;
+  }
+
+  .trip-day-date-long {
+    display: none;
+  }
+
+  .trip-day-date-short {
+    display: inline;
+  }
+
+  /* Compact wrapping row — no middots (they orphan when items wrap) */
+  .trip-meta-bar,
+  .trip-day-meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 0.85rem;
+    row-gap: 0.3rem;
+  }
+
+  .trip-meta-item {
+    font-size: 0.84rem;
+    gap: 0.3rem;
   }
 
   .trip-meta-item + .trip-meta-item {
     border-left: none;
+    padding-left: 0;
+  }
+
+  .trip-meta-item + .trip-meta-item::before,
+  .trip-day-header--muted .trip-meta-item + .trip-meta-item::before,
+  .trip-day-header--ruled .trip-meta-item + .trip-meta-item::before {
+    content: none;
+    display: none;
+    margin: 0;
+  }
+
+  /* Miles + elev stay on the first line; place/date start a clean second row */
+  .trip-meta-item--campsite,
+  .trip-meta-item--date {
+    flex: 1 1 100%;
+    max-width: 100%;
+    white-space: normal;
+  }
+
+  .trail-section-header .trip-meta-item,
+  .trip-day-header--match .trip-meta-item,
+  .trip-day-header--ruled .trip-meta-item,
+  .trip-day-header--muted .trip-meta-item {
+    font-size: 0.84rem;
+  }
+
+  .trail-section-header .trip-meta-icon,
+  .trip-day-header--match .trip-meta-icon,
+  .trip-day-header--ruled .trip-meta-icon,
+  .trip-day-header--muted .trip-meta-icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .trail-section-header .trip-meta-item + .trip-meta-item,
+  .trip-day-header--match .trip-meta-item + .trip-meta-item,
+  .trip-day-header--ruled .trip-meta-item + .trip-meta-item,
+  .trip-day-header--muted .trip-meta-item + .trip-meta-item {
     padding-left: 0;
   }
 }
@@ -587,7 +653,8 @@ h2.trip-day-title {
   margin: 0.5rem 0 0.65rem;
 }
 
-.trail-section-header + .trail-map-block {
+.trail-section-header + .trail-map-block,
+.trip-day-header + .trail-map-block {
   margin-top: 0.5rem;
 }
 
@@ -1267,16 +1334,330 @@ h2.trip-day-title {
 @media (max-width: 900px) {
   .trip-report-layout {
     display: block;
+    margin-top: 0.75rem;
   }
 
   .trip-report-heading {
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .trip-report-eyebrow {
+    margin-bottom: 0.2rem;
+  }
+
+  h1.entry-title.trip-report-title {
+    line-height: 1.2;
   }
 
   .trip-report-sidebar {
     position: static;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0;
   }
+
+  /* Desktop list hides; bottom dock takes over */
+  .trip-report-sidebar .trip-nav {
+    display: none;
+  }
+
+  .trip-report-layout {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  body:has(.trip-dock) .trip-map-fab {
+    display: none !important;
+  }
+
+  body:has(.trip-dock) .trip-map-float {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* =========================================================
+   Mobile trip dock (floating bottom pill)
+   ========================================================= */
+.trip-dock {
+  display: none;
+}
+
+.trip-dock-backdrop,
+.trip-dock-sheet {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .trip-dock {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10020;
+    padding: 0 0.85rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
+  }
+
+  .trip-dock-bar {
+    pointer-events: auto;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-around;
+    gap: 0.15rem;
+    max-width: 28rem;
+    margin: 0 auto;
+    padding: 0.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.06) 38%,
+        rgba(0, 0, 0, 0) 55%
+      ),
+      rgba(28, 32, 24, 0.55);
+    backdrop-filter: blur(12px) saturate(1.35);
+    -webkit-backdrop-filter: blur(12px) saturate(1.35);
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .trip-dock-item,
+  .trip-dock-item:hover,
+  .trip-dock-item:focus,
+  .trip-dock-item:focus-visible,
+  .trip-dock-item:active,
+  .trip-dock-item[aria-pressed="false"] {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    margin: 0;
+    padding: 0.45rem 0.35rem 0.4rem;
+    border: none !important;
+    border-radius: 999px;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.72) !important;
+    font-family: var(--font-body);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    line-height: 1.15;
+    text-decoration: none;
+    box-shadow: none !important;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      background 0.18s ease,
+      color 0.18s ease;
+  }
+
+  .trip-dock-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    color: inherit;
+  }
+
+  .trip-dock-icon .trip-meta-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+    stroke: currentColor;
+    color: inherit;
+  }
+
+  .trip-dock-label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  .trip-dock-item.is-active,
+  .trip-dock-item.is-map-open,
+  .trip-dock-item.is-map-open:hover,
+  .trip-dock-item.is-map-open:focus,
+  .trip-dock-item.is-map-open:active,
+  .trip-dock-item[aria-pressed="true"] {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #ffffff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  }
+
+  .trip-dock-item:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.55);
+    outline-offset: 2px;
+  }
+
+  .trip-dock-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10030;
+    background: rgba(28, 32, 24, 0.35);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  .trip-dock-backdrop[hidden] {
+    display: none;
+  }
+
+  .trip-dock-sheet {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10040;
+    max-height: min(72vh, 32rem);
+    padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom, 0px));
+    border-radius: 1.25rem 1.25rem 0 0;
+    background: #fafaf7;
+    box-shadow: 0 -12px 40px rgba(40, 48, 32, 0.18);
+    transform: translateY(0);
+  }
+
+  .trip-dock-sheet.is-dragging {
+    transition: none;
+  }
+
+  .trip-dock-sheet[hidden] {
+    display: none;
+  }
+
+  .trip-dock-sheet-handle {
+    width: 2.5rem;
+    height: 0.28rem;
+    margin: 0.15rem auto 0.65rem;
+    border-radius: 999px;
+    background: #d5d5ce;
+    touch-action: none;
+  }
+
+  .trip-dock-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.35rem;
+    touch-action: none;
+  }
+
+  .trip-dock-sheet-title {
+    margin: 0;
+    color: var(--color-green);
+    font-family: var(--font-display, var(--font-body));
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  .trip-dock-sheet-close {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 2rem;
+    height: 2rem;
+    min-width: 2rem;
+    min-height: 2rem;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: #ecece7;
+    color: #5c6356;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .trip-dock-sheet-close svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+  }
+
+  .trip-dock-sheet-list {
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem 0 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+  }
+
+  .trip-dock-sheet-list li + li {
+    border-top: 1px solid #e8e8e2;
+  }
+
+  .trip-dock-sheet-link {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.85rem 0.25rem;
+    color: var(--color-green);
+    text-decoration: none;
+  }
+
+  .trip-dock-sheet-link.is-active {
+    color: var(--color-green-dark, var(--color-green));
+  }
+
+  .trip-dock-sheet-link.is-active .trip-dock-sheet-link-label {
+    font-weight: 700;
+  }
+
+  .trip-dock-sheet-link-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    margin-top: 0.1rem;
+  }
+
+  .trip-dock-sheet-link-icon .trip-meta-icon {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+
+  .trip-dock-sheet-link-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .trip-dock-sheet-link-label {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .trip-dock-sheet-link-sub {
+    color: #6b7265;
+    font-size: 0.88rem;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+}
+
+body.trip-dock-sheet-open {
+  overflow: hidden;
 }
 
 .trail-details-container {
@@ -1561,6 +1942,13 @@ h2.trip-day-title {
   display: none;
 }
 
+@media (max-width: 900px) {
+  .trail-gallery-grid[data-collapsed="true"]
+    .trail-gallery-grid-item:nth-child(n + 6) {
+    display: none;
+  }
+}
+
 .trail-gallery-toggle {
   cursor: pointer;
   font-family: inherit;
@@ -1807,6 +2195,19 @@ h2.trip-day-title {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+
+  .single .post-navigation {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    box-sizing: border-box;
+  }
+
+  .single .post-navigation .nav-links {
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 600px) {
@@ -1815,6 +2216,19 @@ h2.trip-day-title {
   }
 
   .single-trail .trail-content-wrap {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .trip-report-layout {
+    margin-top: 0.5rem;
+  }
+
+  .trip-report-heading {
+    margin-bottom: 0.5rem;
+  }
+
+  .single .post-navigation {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }

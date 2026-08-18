@@ -133,7 +133,7 @@ a:hover {
   padding-right: 1.5rem;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 921px) {
   .ast-mobile-header-wrap .ast-primary-header-bar,
   .ast-mobile-header-wrap .main-header-bar,
   .ast-mobile-header-wrap .ast-builder-grid-row-container-inner {
@@ -147,6 +147,141 @@ a:hover {
 
   .ast-mobile-header-wrap .site-header-primary-section-right {
     padding-right: 0 !important;
+  }
+
+  /* Mobile menu toggle — round, darker shiny glass */
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle,
+  .ast-mobile-header-wrap .main-header-menu-toggle,
+  body:not(.ast-theme-transparent-header)
+    .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle,
+  body:not(.ast-theme-transparent-header)
+    .ast-mobile-header-wrap
+    .main-header-menu-toggle {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    min-height: 2.75rem !important;
+    margin: 0.35rem 0.5rem 0.35rem 0;
+    padding: 0 !important;
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.06) 38%,
+        rgba(0, 0, 0, 0) 55%
+      ),
+      rgba(28, 32, 24, 0.55) !important;
+    backdrop-filter: blur(12px) saturate(1.35);
+    -webkit-backdrop-filter: blur(12px) saturate(1.35);
+    border: 1px solid rgba(255, 255, 255, 0.28) !important;
+    border-radius: 50% !important;
+    box-shadow:
+      0 6px 18px rgba(0, 0, 0, 0.28),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+    color: #ffffff !important;
+  }
+
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle .mobile-menu,
+  .ast-mobile-header-wrap .main-header-menu-toggle .mobile-menu {
+    display: none !important;
+  }
+
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle .menu-toggle-icon,
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle .ast-mobile-svg,
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle svg,
+  .ast-mobile-header-wrap .main-header-menu-toggle svg {
+    color: inherit !important;
+    fill: currentColor !important;
+    stroke: currentColor;
+  }
+
+  /* Thinner hamburger bars (Astra ships thick filled paths) */
+  .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle:not(.toggled)
+    .ast-mobile-svg,
+  .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle:not(.toggled)
+    .icon-menu-bars,
+  .ast-mobile-header-wrap
+    .main-header-menu-toggle:not(.toggled)
+    .ast-mobile-svg,
+  .ast-mobile-header-wrap
+    .main-header-menu-toggle:not(.toggled)
+    .icon-menu-bars,
+  .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle:not(.toggled)
+    .menu-toggle-icon,
+  .ast-mobile-header-wrap
+    .main-header-menu-toggle:not(.toggled)
+    .menu-toggle-icon {
+    display: none !important;
+  }
+
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle:not(.toggled)::before,
+  .ast-mobile-header-wrap .main-header-menu-toggle:not(.toggled)::before {
+    content: "";
+    display: block;
+    width: 1.05rem;
+    height: 0.72rem;
+    background:
+      linear-gradient(currentColor, currentColor) center 0 / 100% 1.75px
+        no-repeat,
+      linear-gradient(currentColor, currentColor) center 50% / 100% 1.75px
+        no-repeat,
+      linear-gradient(currentColor, currentColor) center 100% / 100% 1.75px
+        no-repeat;
+  }
+
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle.toggled::before,
+  .ast-mobile-header-wrap .main-header-menu-toggle.toggled::before {
+    content: none;
+  }
+
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle.toggled .ast-close-svg,
+  .ast-mobile-header-wrap .main-header-menu-toggle.toggled .ast-close-svg {
+    display: block !important;
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+
+  /* Open state: same dark glass, a bit denser so it stays clear on white */
+  .ast-mobile-header-wrap .ast-button-wrap .menu-toggle.toggled,
+  .ast-mobile-header-wrap .main-header-menu-toggle.toggled,
+  body:not(.ast-theme-transparent-header)
+    .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle.toggled,
+  body:not(.ast-theme-transparent-header)
+    .ast-mobile-header-wrap
+    .main-header-menu-toggle.toggled,
+  .ast-main-header-nav-open
+    .ast-mobile-header-wrap
+    .ast-button-wrap
+    .menu-toggle,
+  .ast-main-header-nav-open .ast-mobile-header-wrap .main-header-menu-toggle {
+    background:
+      linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.32) 0%,
+        rgba(255, 255, 255, 0.08) 40%,
+        rgba(0, 0, 0, 0) 58%
+      ),
+      rgba(20, 24, 18, 0.78) !important;
+    border-color: rgba(255, 255, 255, 0.32) !important;
+    color: #ffffff !important;
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
   }
 }
 
@@ -165,6 +300,18 @@ a:hover {
   max-width: 100%;
   height: auto;
   display: block;
+}
+
+.trail-section-content a.trail-lightbox,
+.entry-content a.trail-lightbox {
+  cursor: zoom-in;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.trail-section-content a.trail-lightbox img,
+.entry-content a.trail-lightbox img {
+  pointer-events: none;
 }
 
 /* Classic editor captions */
