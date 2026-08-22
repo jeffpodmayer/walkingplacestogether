@@ -17,6 +17,7 @@ $map_url          = get_field( 'map' );
 $map_description  = get_field( 'map_description' );
 $trip_overview    = get_field( 'trip_overview' );
 $gear_notes       = get_field( 'gear_notes' );
+$gear_photos      = get_field( 'gear_photo_gallery' );
 $resource_links   = get_field( 'trip_report_resource_links' );
 $photo_gallery    = get_field( 'photo_gallery' );
 $related_reports  = get_field( 'related_trip_reports' );
@@ -217,7 +218,7 @@ $hero = $normalize_image( $hero_image );
     <?php
     $nav_items = [];
     if ( $trip_overview || $map_url ) $nav_items[] = [ 'icon' => 'compass', 'label' => 'Trip Report', 'href' => '#day-trip-report' ];
-    if ( $gear_notes )      $nav_items[] = [ 'icon' => 'backpack', 'label' => 'Gear', 'href' => '#day-trip-gear' ];
+    if ( $gear_notes || $gear_photos ) $nav_items[] = [ 'icon' => 'backpack', 'label' => 'Gear', 'href' => '#day-trip-gear' ];
     if ( $resource_links )  $nav_items[] = [ 'icon' => 'link', 'label' => 'Resources & Links', 'href' => '#day-trip-resources' ];
     if ( $related_reports ) $nav_items[] = [ 'icon' => 'bookmark', 'label' => 'Related Trip Reports', 'href' => '#day-trip-related' ];
     if ( $photo_gallery )   $nav_items[] = [ 'icon' => 'image', 'label' => 'Photo Gallery', 'href' => '#day-trip-gallery' ];
@@ -308,12 +309,15 @@ $hero = $normalize_image( $hero_image );
       </div>
     <?php endif; ?>
 
-    <?php if ( $gear_notes ) : ?>
+    <?php if ( $gear_notes || $gear_photos ) : ?>
       <div class="day-trip-block" id="day-trip-gear">
         <h2 class="trip-day-title">Gear</h2>
-        <div class="trail-section-content">
-          <?php echo wp_kses_post( $gear_notes ); ?>
-        </div>
+        <?php if ( $gear_notes ) : ?>
+          <div class="trail-section-content">
+            <?php echo wp_kses_post( $gear_notes ); ?>
+          </div>
+        <?php endif; ?>
+        <?php $render_gallery( $gear_photos, 'day-trip-gear-gallery' ); ?>
       </div>
     <?php endif; ?>
 
