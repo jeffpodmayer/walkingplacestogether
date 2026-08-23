@@ -601,6 +601,96 @@ add_filter( 'acf/load_field/type=galerie-4', function( $field ) {
   return $field;
 } );
 
+// ── Admin: place related fields on shared rows via wrapper widths ─────────
+$custom_theme_admin_field_widths = [
+  'distance'           => '25',
+  'trip_duration_days' => '25',
+  'peaks_climbed'      => '25',
+  'bulgers_climbed'    => '25',
+  'start_date'         => '50',
+  'end_date'           => '50',
+  'map'                => '50',
+  'map_description'    => '50',
+];
+// Per-day fields share rows for every day, no matter how many days exist:
+//   row 1: day number + date + campsite; row 2: distance + elevation gain/loss.
+// Fields are matched by internal name or by visible label, since some field
+// names in the ACF group differ from what the labels suggest.
+add_filter( 'acf/prepare_field', function( $field ) {
+  if ( ! is_admin() ) {
+    return $field;
+  }
+  $day_row_fields = '(number|date|campsite|distance|elevation[\s_]*(gain|loss))';
+  $name  = isset( $field['name'] ) ? (string) $field['name'] : '';
+  $label = isset( $field['label'] ) ? trim( (string) $field['label'] ) : '';
+  if (
+    preg_match( "/^day_\d+_{$day_row_fields}(_copy\d*)?$/i", $name ) ||
+    preg_match( "/^day[\s_]*\d+[\s_]+{$day_row_fields}$/i", $label )
+  ) {
+    $field['wrapper']['width'] = '33.33';
+  }
+  return $field;
+} );
+foreach ( $custom_theme_admin_field_widths as $custom_theme_field_name => $custom_theme_field_width ) {
+  add_filter( "acf/prepare_field/name={$custom_theme_field_name}", function( $field ) use ( $custom_theme_field_width ) {
+    if ( is_admin() ) {
+      $field['wrapper']['width'] = $custom_theme_field_width;
+    }
+    return $field;
+  } );
+}
+unset( $custom_theme_admin_field_widths, $custom_theme_field_name, $custom_theme_field_width );
+
+// ── Admin: move each day's campsite field to render right after its date ──
+// Field order lives in the ACF field group; this only reorders the editor
+// display so the number + date + campsite row lines up.
+add_filter( 'acf/pre_render_fields', function( $fields, $post_id ) {
+  if ( ! is_admin() || ! is_array( $fields ) ) {
+    return $fields;
+  }
+
+  $days_with_date = [];
+  foreach ( $fields as $field ) {
+    if ( ! empty( $field['name'] ) && preg_match( '/^day_(\d+)_date$/i', $field['name'], $m ) ) {
+      $days_with_date[ $m[1] ] = true;
+    }
+  }
+  if ( ! $days_with_date ) {
+    return $fields;
+  }
+
+  // Pull out campsite fields for days that have a date field...
+  $campsites      = [];
+  $campsite_days  = [];
+  foreach ( $fields as $field ) {
+    if ( ! empty( $field['name'] ) && preg_match( '/^day_(\d+)_campsite$/i', $field['name'], $m )
+      && isset( $days_with_date[ $m[1] ] ) ) {
+      $campsites[ $m[1] ]     = $field;
+      $campsite_days[ $m[1] ] = true;
+    }
+  }
+  if ( ! $campsites ) {
+    return $fields;
+  }
+
+  // ...and re-insert each one immediately after its day's date field.
+  // $campsite_days stays intact so the original occurrence is always skipped,
+  // even after the field has been re-inserted earlier in the list.
+  $reordered = [];
+  foreach ( $fields as $field ) {
+    $name = isset( $field['name'] ) ? (string) $field['name'] : '';
+    if ( preg_match( '/^day_(\d+)_campsite$/i', $name, $m ) && isset( $campsite_days[ $m[1] ] ) ) {
+      continue;
+    }
+    $reordered[] = $field;
+    if ( preg_match( '/^day_(\d+)_date$/i', $name, $m ) && isset( $campsites[ $m[1] ] ) ) {
+      $reordered[] = $campsites[ $m[1] ];
+      unset( $campsites[ $m[1] ] );
+    }
+  }
+  return $reordered;
+}, 10, 2 );
+
 // ── Admin: ACF Galerie 4 layout fixes in post editor ─────────────────────
 add_action( 'admin_enqueue_scripts', function( $hook ) {
   if ( ! in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) {
@@ -612,6 +702,15 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
     get_stylesheet_directory_uri() . '/css/admin-galerie-fix.css',
     [],
     wp_get_theme()->get( 'Version' )
+  );
+
+  // Expand/collapse buttons for the per-day tab sections.
+  wp_enqueue_script(
+    'custom-theme-admin-day-collapse',
+    get_stylesheet_directory_uri() . '/js/admin-day-collapse.js',
+    [ 'acf-input' ],
+    wp_get_theme()->get( 'Version' ),
+    true
   );
 }, 99 );
 
