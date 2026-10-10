@@ -4,7 +4,7 @@
  * Display-only: hidden fields still submit their values on save.
  */
 (function () {
-  'use strict';
+  "use strict";
 
   var DAY_LABEL = /^day\s*\d+$/i;
   // Fields from Gear Notes onward are never part of a day section.
@@ -14,31 +14,31 @@
   // editors keep valid dimensions (no re-init glitches), and the page height
   // changes are less likely to trigger scroll-anchoring jumps.
   function injectStyles() {
-    if (document.getElementById('wpt-day-collapse-css')) {
+    if (document.getElementById("wpt-day-collapse-css")) {
       return;
     }
-    var style = document.createElement('style');
-    style.id = 'wpt-day-collapse-css';
+    var style = document.createElement("style");
+    style.id = "wpt-day-collapse-css";
     style.textContent =
-      '.wpt-day-hidden{' +
-      'height:0 !important;min-height:0 !important;' +
-      'margin:0 !important;padding:0 !important;' +
-      'border:none !important;overflow:hidden !important;' +
-      'visibility:hidden;' +
-      '}' +
-      '#poststuff,.acf-postbox{overflow-anchor:none;}';
+      ".wpt-day-hidden{" +
+      "height:0 !important;min-height:0 !important;" +
+      "margin:0 !important;padding:0 !important;" +
+      "border:none !important;overflow:hidden !important;" +
+      "visibility:hidden;" +
+      "}" +
+      "#poststuff,.acf-postbox{overflow-anchor:none;}";
     document.head.appendChild(style);
   }
 
   function isSectionEnd(el) {
-    var name = el.getAttribute && el.getAttribute('data-name');
+    var name = el.getAttribute && el.getAttribute("data-name");
     return !!(name && SECTION_END.test(name));
   }
 
   function sectionFields(tabWrap) {
     var fields = [];
     var el = tabWrap.nextElementSibling;
-    while (el && !el.classList.contains('acf-tab-wrap') && !isSectionEnd(el)) {
+    while (el && !el.classList.contains("acf-tab-wrap") && !isSectionEnd(el)) {
       fields.push(el);
       el = el.nextElementSibling;
     }
@@ -46,14 +46,14 @@
   }
 
   function setCollapsed(tabWrap, collapsed) {
-    tabWrap.dataset.wptCollapsed = collapsed ? '1' : '';
+    tabWrap.dataset.wptCollapsed = collapsed ? "1" : "";
     sectionFields(tabWrap).forEach(function (field) {
-      field.classList.toggle('wpt-day-hidden', collapsed);
+      field.classList.toggle("wpt-day-hidden", collapsed);
     });
-    var btn = tabWrap.querySelector('.wpt-day-toggle');
+    var btn = tabWrap.querySelector(".wpt-day-toggle");
     if (btn) {
-      btn.textContent = collapsed ? 'Expand' : 'Collapse';
-      btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      btn.textContent = collapsed ? "Expand" : "Collapse";
+      btn.setAttribute("aria-expanded", collapsed ? "false" : "true");
     }
   }
 
@@ -61,25 +61,25 @@
     if (tabWrap.dataset.wptDayToggle) {
       return;
     }
-    var links = tabWrap.querySelectorAll('a.acf-tab-button');
+    var links = tabWrap.querySelectorAll("a.acf-tab-button");
     // Only single-tab "Day N" headers; real multi-tab bars already switch views.
     if (links.length !== 1 || !DAY_LABEL.test(links[0].textContent.trim())) {
       return;
     }
-    tabWrap.dataset.wptDayToggle = '1';
+    tabWrap.dataset.wptDayToggle = "1";
 
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'button button-small wpt-day-toggle';
-    btn.style.cssText = 'margin:6px 0 6px 12px;vertical-align:middle;';
-    btn.addEventListener('click', function () {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "button button-small wpt-day-toggle";
+    btn.style.cssText = "margin:6px 0 6px 12px;vertical-align:middle;";
+    btn.addEventListener("click", function () {
       setCollapsed(tabWrap, !tabWrap.dataset.wptCollapsed);
     });
 
-    var group = tabWrap.querySelector('ul');
+    var group = tabWrap.querySelector("ul");
     if (group) {
-      var li = document.createElement('li');
-      li.style.cssText = 'float:left;list-style:none;';
+      var li = document.createElement("li");
+      li.style.cssText = "float:left;list-style:none;";
       li.appendChild(btn);
       group.appendChild(li);
     } else {
@@ -91,16 +91,39 @@
 
   function initAll() {
     injectStyles();
-    document.querySelectorAll('.acf-tab-wrap').forEach(initWrap);
+    document.querySelectorAll(".acf-tab-wrap").forEach(initWrap);
   }
 
-  if (window.acf && window.acf.addAction) {
-    // ACF builds tab bars with JS, so hook its lifecycle events.
-    window.acf.addAction('ready', initAll);
-    window.acf.addAction('append', initAll);
+  // ACF builds tab bars with JS, so hook its lifecycle events when available.
+  // Otherwise poll: the tab markup appears shortly after page load.
+  function boot() {
+    if (window.acf && window.acf.addAction) {
+      window.acf.addAction("ready", initAll);
+      window.acf.addAction("append", initAll);
+      return;
+    }
+    var attempts = 0;
+    var timer = setInterval(function () {
+      attempts++;
+      if (window.acf && window.acf.addAction) {
+        clearInterval(timer);
+        window.acf.addAction("ready", initAll);
+        window.acf.addAction("append", initAll);
+        initAll();
+        return;
+      }
+      if (document.querySelector(".acf-tab-wrap")) {
+        initAll();
+      }
+      if (attempts > 40) {
+        clearInterval(timer);
+      }
+    }, 250);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
   } else {
-    document.addEventListener('DOMContentLoaded', function () {
-      setTimeout(initAll, 500);
-    });
+    boot();
   }
 })();

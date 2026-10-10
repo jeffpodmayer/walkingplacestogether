@@ -331,64 +331,47 @@ $render_gallery = function( $images, $extra_class = '', $collapsible = false ) u
     }
 
     if ( ! empty( $glance_days ) ) {
-      // TEMP: pad with placeholder days so a 5-day layout can be previewed — remove when done.
-      $placeholder_camps = [ 'Stuart Lake', 'Trailhead' ];
-      $next_day            = (int) array_key_last( $glance_days ) + 1;
-      $placeholders_needed = max( 0, 5 - count( $glance_days ) );
-      for ( $p = 0; $p < $placeholders_needed; $p++ ) {
-        $is_last_placeholder = ( $p === $placeholders_needed - 1 );
-        $glance_days[ $next_day + $p ] = [
-          'title'          => '',
-          'distance'       => [ 6.2, 4.1 ][ $p ] ?? 5.0,
-          'elevation_gain' => [ 890, 210 ][ $p ] ?? 500,
-          'elevation_loss' => [ 410, 1640 ][ $p ] ?? 500,
-          'campsite'       => $is_last_placeholder ? '' : ( $placeholder_camps[ $p ] ?? 'Camp' ),
-          'placeholder'    => true,
-        ];
-      }
-
       $last_day_num = (int) array_key_last( $glance_days );
       ob_start();
       ?>
       <div class="trip-day-glance trip-day-glance--strip">
         <div class="trip-day-glance-strip" role="list">
           <?php foreach ( $glance_days as $num => $day ) :
-            $place = $day['campsite'] ?: ( $day['title'] ?: ( ! empty( $day['placeholder'] ) ? 'Trailhead' : '' ) );
-            $is_end     = ( (int) $num === $last_day_num && ! $day['campsite'] );
+            $title      = $day['title'] ?: '';
+            $place      = $day['campsite'] ?: '';
+            $is_end     = ( (int) $num === $last_day_num && ! $place );
             $place_icon = $is_end ? 'footprints' : 'tent';
-            $is_placeholder = ! empty( $day['placeholder'] );
-            $href = $is_placeholder ? '#trip-overview' : '#trip-day-' . $num;
+            $has_miles  = (bool) $day['distance'];
+            $has_elev   = $day['elevation_gain'] || $day['elevation_loss'];
             ?>
             <a
-              class="trip-day-glance-col js-trip-goto<?php echo $is_placeholder ? ' is-placeholder' : ''; ?>"
-              href="<?php echo esc_attr( $href ); ?>"
+              class="trip-day-glance-row js-trip-goto"
+              href="#trip-day-<?php echo esc_attr( $num ); ?>"
               role="listitem"
-              <?php echo $is_placeholder ? 'aria-label="Placeholder day for layout preview"' : ''; ?>
             >
-              <span class="trip-day-glance-day">Day <?php echo esc_html( $num ); ?></span>
-              <?php if ( $day['distance'] ) : ?>
-                <span class="trip-day-glance-miles">
-                  <span class="trip-day-glance-icon" aria-hidden="true"><?php echo custom_theme_trip_meta_icon( 'route' ); ?></span>
+              <span class="trip-day-glance-day">
+                <span class="trip-day-glance-day-num">Day <?php echo esc_html( $num ); ?></span>
+                <?php if ( $title ) : ?>
+                  <span class="trip-day-glance-day-title"><?php echo esc_html( $title ); ?></span>
+                <?php endif; ?>
+              </span>
+              <span class="trip-day-glance-miles<?php echo $has_miles ? '' : ' is-empty'; ?>">
+                <?php if ( $day['distance'] ) : ?>
                   <span class="trip-day-glance-miles-value">
                     <?php echo esc_html( custom_theme_format_distance( $day['distance'], 1 ) ); ?><span class="trip-day-glance-unit"> mi</span>
                   </span>
-                </span>
-              <?php endif; ?>
-              <?php if ( $day['elevation_gain'] || $day['elevation_loss'] ) : ?>
-                <span class="trip-day-glance-elev">
-                  <?php if ( $day['elevation_gain'] && $day['elevation_loss'] ) : ?>
-                    <span>+<?php echo esc_html( custom_theme_format_elevation( $day['elevation_gain'] ) ); ?></span>
-                    <span>−<?php echo esc_html( custom_theme_format_elevation( $day['elevation_loss'] ) ); ?> ft</span>
-                  <?php elseif ( $day['elevation_gain'] ) : ?>
-                    <span>+<?php echo esc_html( custom_theme_format_elevation( $day['elevation_gain'] ) ); ?> ft</span>
-                  <?php else : ?>
-                    <span>−<?php echo esc_html( custom_theme_format_elevation( $day['elevation_loss'] ) ); ?> ft</span>
-                  <?php endif; ?>
-                </span>
-              <?php else : ?>
-                <span class="trip-day-glance-elev trip-day-glance-elev--empty" aria-hidden="true"></span>
-              <?php endif; ?>
-              <span class="trip-day-glance-place<?php echo $place ? '' : ' trip-day-glance-place--empty'; ?>">
+                <?php endif; ?>
+              </span>
+              <span class="trip-day-glance-elev<?php echo $has_elev ? '' : ' is-empty'; ?>">
+                <?php if ( $day['elevation_gain'] && $day['elevation_loss'] ) : ?>
+                  +<?php echo esc_html( custom_theme_format_elevation( $day['elevation_gain'] ) ); ?> / −<?php echo esc_html( custom_theme_format_elevation( $day['elevation_loss'] ) ); ?> ft
+                <?php elseif ( $day['elevation_gain'] ) : ?>
+                  +<?php echo esc_html( custom_theme_format_elevation( $day['elevation_gain'] ) ); ?> ft
+                <?php elseif ( $day['elevation_loss'] ) : ?>
+                  −<?php echo esc_html( custom_theme_format_elevation( $day['elevation_loss'] ) ); ?> ft
+                <?php endif; ?>
+              </span>
+              <span class="trip-day-glance-place<?php echo $place ? '' : ' is-empty'; ?>">
                 <?php if ( $place ) : ?>
                   <span class="trip-day-glance-icon" aria-hidden="true"><?php echo custom_theme_trip_meta_icon( $place_icon ); ?></span>
                   <span><?php echo esc_html( $place ); ?></span>

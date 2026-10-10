@@ -705,11 +705,13 @@ add_action( 'admin_enqueue_scripts', function( $hook ) {
   );
 
   // Expand/collapse buttons for the per-day tab sections.
+  // No script dependencies: if a handle like 'acf-input' is not registered,
+  // WordPress silently skips the script. The JS itself waits for ACF instead.
   wp_enqueue_script(
     'custom-theme-admin-day-collapse',
     get_stylesheet_directory_uri() . '/js/admin-day-collapse.js',
-    [ 'acf-input' ],
-    wp_get_theme()->get( 'Version' ),
+    [],
+    (string) filemtime( get_stylesheet_directory() . '/js/admin-day-collapse.js' ),
     true
   );
 }, 99 );
